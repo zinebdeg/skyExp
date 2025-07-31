@@ -84,7 +84,7 @@ export const flights = [
     ]
   },
   {
-    imageSrc: "/images/birthday.png",
+    imageSrc: "/images/hotair.png",
     imageAlt: "Birthday Celebration Flight",
     title: "Birthday Celebration Flight",
     price: "480",

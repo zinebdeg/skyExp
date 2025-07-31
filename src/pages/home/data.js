@@ -82,5 +82,33 @@ export const flights = [
         description: "A romantic picnic basket with Moroccan treats to enjoy post-flight.",
       }
     ]
+  },
+  {
+    imageSrc: "/images/hotair.png",
+    imageAlt: "Birthday Celebration Flight",
+    title: "Birthday Celebration Flight",
+    price: "480",
+    features: [
+      {
+        icon: "🎂",
+        label: "Birthday Cake",
+        description: "Special birthday cake served at altitude with candles and celebration.",
+      },
+      {
+        icon: "🎈",
+        label: "Decorated Balloon",
+        description: "Hot-air balloon decorated with birthday banners and colorful streamers.",
+      },
+      {
+        icon: "🎁",
+        label: "Gift Package",
+        description: "Commemorative gift package with personalized certificate and souvenir photos.",
+      },
+      {
+        icon: "🥳",
+        label: "Group Celebration",
+        description: "Perfect for groups up to 8 people with birthday music and festive atmosphere.",
+      }
+    ]
   }
 ];

@@ -1,4 +1,4 @@
-export  function  Footer(){
+const Footer = () => {
 
     return (
             <footer className="bg-[#885E3C] text-white py-10 mt-0">
@@ -41,7 +41,7 @@ export  function  Footer(){
         </div>
       </footer>
 
-    )
+    );
+};
 
-
-}
+export default Footer;

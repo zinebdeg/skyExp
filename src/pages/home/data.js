@@ -82,5 +82,63 @@ export const flights = [
         description: "A romantic picnic basket with Moroccan treats to enjoy post-flight.",
       }
     ]
+
+  },
+  {
+    imageSrc: "/images/balloon-basket.png",
+    imageAlt: "Pack Anniversaire en Montgolfière",
+    title: "Pack Anniversaire en Montgolfière",
+    price: "Sur devis",
+    features: [
+      {
+        icon: "🎂",
+        label: "Gâteau & Petit Déjeuner",
+        description: "Gâteau d'anniversaire personnalisé avec prénom et petit déjeuner spécial.",
+      },
+      {
+        icon: "📸",
+        label: "Photos souvenir",
+        description: "Photos imprimées + numériques prises pendant le vol et à l’embarquement.",
+      },
+      {
+        icon: "🎊",
+        label: "Décoration festive",
+        description: "Panier décoré : ballons, banderoles 'Joyeux Anniversaire'.",
+      },
+      {
+        icon: "📅",
+        label: "Réservation",
+        description: "Minimum 7 jours à l'avance. Offre valable toute l’année (selon météo).",
+      }
+    ]
+  },
+  {
+    imageSrc: "/images/mariage1.png",
+    imageAlt: "Pack Demande en Mariage ",
+    title: "Pack Demande en Mariage en Montgolfière",
+    price: "Sur devis",
+    features: [
+      {
+        icon: "💐",
+        label: "Fleurs ou bouquet romantique",
+        description: "Fleurs ou bouquet romantique à bord.",
+      },
+      {
+        icon: "❤️",
+        label: "Mise en scène personnalisée",
+        description: "Message sur banderole, panneau au sol, pétales de roses, etc.",
+      },
+      {
+        icon: "📸",
+        label: "Photos & Vidéo",
+        description: "Photos souvenir + option vidéo prises discrètement pendant le vol et la demande.",
+      },
+      
+      {
+        icon: "🥐",
+        label: "Petit déjeuner romantique",
+        description: "Petit déjeuner romantique après la demande.",
+      }
+    ]
   }
 ];

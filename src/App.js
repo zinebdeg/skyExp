@@ -7,8 +7,10 @@ import BookingPage from './pages/Booking/Booking';
 import PrivateFlightPage from './pages/PrivateFlight/PrivateFlight';
 import RoyalFlightPage from './pages/royalFlight/RoyalFlight';
 import ClassicFlightPage from './pages/classicFlight/ClassicFlight';
-import { Footer } from './components/footer/Footer';
-import AboutPage from './pages/about/About';
+import Footer from './components/footer/Footer';
+import About from './pages/about/About';
+import AnniversaireDetails from './pages/about/AnniversaireDetails';
+import MariageDetails from './pages/about/MariageDetails';
 
 function App() {
   const [showContent, setShowContent] = useState(false);
@@ -30,7 +32,9 @@ function App() {
         <Route path="/private-flight" element={<PrivateFlightPage />} />
         <Route path="/royal-flight" element={<RoyalFlightPage />} />
         <Route path="/classic-flight" element={<ClassicFlightPage />} />
-        <Route path="/about" element={<AboutPage />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/anniversaire-details" element={<AnniversaireDetails />} />
+        <Route path="/mariage-details" element={<MariageDetails />} />
       </Routes>
          <Footer/>
     </Router>

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { flights } from "./data";
 import FlightCard from "../../components/flightCard/FlightCard";
+import PanoramicSection from "../../components/section";
 export default function HomePage() {
   return (
           <div className="min-h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('/images/landing.png')" }}>
@@ -64,22 +65,7 @@ export default function HomePage() {
             </section>
 
             {/* Section Panoramic Views sans effet plein écran */}
-            <section className="w-full bg-white py-16">
-              <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center gap-8">
-                <div className="flex-1 flex flex-col gap-6">
-                  <h2 className="text-4xl md:text-5xl font-extrabold mb-2">Panoramic Views</h2>
-                  <h3 className="text-xl font-bold mb-2">Marrakech from Above</h3>
-                  <p className="text-lg text-black/80 mb-4">Soar over the Red City and beyond in our safe and comfortable hot-air balloons. Each flight is a new masterpiece painted by the sky.</p>
-                  <div className="flex gap-6 mt-4">
-                    <img src="/images/one.jpg" alt="Breakfast" className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-2xl" />
-                    <img src="/images/too.png" alt="Balloons" className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-2xl" />
-                  </div>
-                </div>
-                <div className="flex-1 flex justify-center items-center">
-                  <img src="/images/panoramic.png" alt="Panoramic Balloon" className="w-full max-w-md h-[350px] object-cover rounded-3xl" />
-                </div>
-              </div>
-            </section>
+            <PanoramicSection /> 
 
             {/* Section Client's Testimonials */}
             <section className="w-full bg-[#e8ded6] py-16">

@@ -148,34 +148,7 @@ const About = () => {
 
 
         {/* Section: A Journey Through Moroccan Landscapes */}
-        <section style={{ background: '#f5e3d0', padding: '56px 0 40px 0', margin: '48px -20px 0 -20px', borderRadius: 32 }}>
-          <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 20px' }}>
-            <h2 style={{ fontWeight: 'bold', fontSize: '2.3rem', color: '#2C2C2C', marginBottom: 8, letterSpacing: '-1px' }}>
-              A Journey Through Moroccan Landscapes
-            </h2>
-            <div style={{ fontSize: '1.1rem', color: '#a43518', fontWeight: 600, marginBottom: 24 }}>Let yourself be captivated by the beauty of Morocco</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32, alignItems: 'center', marginBottom: 24 }}>
-              <div style={{ flex: 1, minWidth: 260 }}>
-                <p style={{ color: '#222', fontSize: '1.13rem', marginBottom: 14, lineHeight: 1.7 }}>
-                  From above, you'll enjoy unparalleled views of Marrakech's expansive palm groves, the Atlas Mountains, and the desert. The sunrise creates spectacular colors—perfect for capturing unforgettable photos.
-                </p>
-                <ul style={{ color: '#444', fontSize: '1.05rem', marginLeft: 18, marginBottom: 0, lineHeight: 1.6 }}>
-                  <li>Expansive palm groves</li>
-                  <li>The majestic Atlas Mountains</li>
-                  <li>Desert dunes and golden light</li>
-                  <li>Unique photo opportunities at sunrise</li>
-                </ul>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1, minWidth: 260 }}>
-                <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end' }}>
-                  <img src="/images/balloon-landscape.png" alt="Balloon landscape" style={{ width: 170, height: 110, objectFit: 'cover', borderRadius: 18, boxShadow: '0 4px 16px #0001' }} />
-                  <img src="/images/classic-main.png" alt="Classic main" style={{ width: 130, height: 110, objectFit: 'cover', borderRadius: 18, boxShadow: '0 4px 16px #0001' }} />
-                </div>
-                <img src="/images/balloon-land.png" alt="Balloon land" style={{ width: 340, height: 100, objectFit: 'cover', borderRadius: 18, boxShadow: '0 4px 16px #0001', marginLeft: 0 }} />
-              </div>
-            </div>
-          </div>
-        </section>
+        
 
 
         {/* Section: Our Commitments: A Worry-Free Experience */}
@@ -199,7 +172,7 @@ const About = () => {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1, minWidth: 260 }}>
                 <div style={{ display: 'flex', gap: 16, justifyContent: 'flex-end' }}>
-                  <img src="/images/Booking.png" alt="Booking" style={{ width: 180, height: 120, objectFit: 'cover', borderRadius: 18, boxShadow: '0 4px 16px #0001' }} />
+                  <img src="/images/one.jpg" alt="one" style={{ width: 180, height: 120, objectFit: 'cover', borderRadius: 18, boxShadow: '0 4px 16px #0001' }} />
                   <img src="/images/too.png" alt="Too" style={{ width: 100, height: 120, objectFit: 'cover', borderRadius: 18, boxShadow: '0 4px 16px #0001' }} />
                 </div>
                 <img src="/images/happy-group.png" alt="Happy group" style={{ width: 340, height: 100, objectFit: 'cover', borderRadius: 18, boxShadow: '0 4px 16px #0001', marginLeft: 0 }} />

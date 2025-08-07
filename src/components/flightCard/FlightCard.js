@@ -9,10 +9,10 @@ export default function FlightCard({
   buttonText = 'Book now'
 }) {
   return (
-    <div className="flex flex-col p-8 gap-8 bg-[#eec09a] rounded-2xl">
+    <div className="flex flex-col p-8 gap-8 w-full bg-[#eec09a] rounded-2xl max-w-full md:max-w-none">
       {/* Title at the very top */}
       <div className="flex justify-between items-start w-full">
-        <h3 className="text-2xl font-bold text-black">{title}</h3>
+        <h3 className=" text-2xl font-bold text-black" style={{textIndent:"50px"}}>{title}</h3>
         <span className="text-lg font-bold text-black">
           Price: <span className="text-[#b94c2a] text-2xl">${price}</span>
         </span>
@@ -21,7 +21,7 @@ export default function FlightCard({
       {/* Content row (image + details) */}
       <div className="flex flex-col md:flex-row gap-8 items-stretch">
         {/* Image Section */}
-        <div className="w-full md:w-1/2 flex items-center justify-center">
+        <div className="w-full md:w-2/5 flex items-center justify-center">
           <img 
             src={imageSrc} 
             alt={imageAlt}
@@ -31,7 +31,7 @@ export default function FlightCard({
         </div>
 
         {/* Details Section */}
-        <div className="w-full md:w-1/2 flex flex-col justify-between">
+        <div className="w-full md:w-3/5 flex flex-col justify-between">
           <ul className="space-y-3">
             {features.map((feature, index) => (
               <li key={index} className="flex items-start gap-3">

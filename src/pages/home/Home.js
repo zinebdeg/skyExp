@@ -3,25 +3,26 @@ import { flights } from "./data";
 import FlightCard from "../../components/flightCard/FlightCard";
 export default function HomePage() {
   return (
-          <div className="min-h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('/images/balloon-bg.png')" }}>
+          <div className="min-h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('/images/landing.png')" }}>
       {/* Hero Section */}
-            <main className="relative flex items-center justify-center min-h-[70vh] md:min-h-[80vh] w-full">
+            <main className="relative flex items-center justify-center h-[calc(100vh-144px)] w-full">
               <div className="relative z-10 flex flex-col items-center justify-center w-full h-full text-center">
-                <p className="text-black-400 font-semibold mb-2 uppercase tracking-widest text-lg md:text-xl drop-shadow-lg">
-            LET'S SOAR THE SKIES OF MARRAKECH
-          </p>
-                <h1 className="text-3xl md:text-5xl font-extrabold text-black mb-8 drop-shadow-xl">
+          <div className="content flex flex-col items-center justify-center gap-80">
+
+     <h1 className="text-3xl md:text-5xl font-bold text-black mb-8 drop-shadow-xl">
                   Soar Above Marrakech in Hot air Balloon
           </h1>
-                <Link to="/booking" className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-md font-bold text-lg uppercase tracking-wider transition-colors shadow-lg">
+                <Link to="/booking" className="bg-[#a43518] hover:bg-orange-600 text-white px-8 py-4 rounded-md font-bold text-lg uppercase tracking-wider transition-colors shadow-lg">
             BOOK YOUR FLIGHT NOW
                 </Link>
+          </div>
+           
         </div>
       </main>
             {/* Our Flights Section - Version maquette */}
-            <section className="w-full bg-[#f5ede6] py-12">
+            <section className="w-full bg-[#ded1c7] py-12 ">
               <div className="max-w-5xl mx-auto rounded-2xl  p-8 md:p-12 flex flex-col gap-12  " >
-                <h2 className="text-4xl font-extrabold text-center mb-6 text-black">Our Flights</h2>
+                <h2 className="text-6xl font-extrabold text-center mb-6 text-[#2c2c2c]">Our Flights</h2>
              
              {flights.map((flight, index) => (
   <FlightCard key={index} {...flight}  />
@@ -152,4 +153,4 @@ export default function HomePage() {
     
   )
 
-}   
+}

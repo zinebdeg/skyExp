@@ -2,7 +2,7 @@ export const flights = [
   {
     imageSrc: "/images/filght.png",
     imageAlt: "Royal Hot-Air Balloon Flight in Marrakech",
-    title: "Royal Hot-Air Balloon Flight in Marrakech",
+    title: "Royal Flight",
     price: "550",
     features: [
       {
@@ -28,9 +28,9 @@ export const flights = [
     ]
   },
   {
-    imageSrc: "/images/hotair.png",
-    imageAlt: "Sunrise Adventure Flight",
-    title: "Sunrise Adventure Flight",
+    imageSrc: "/images/traditionnel.png",
+    imageAlt: "Classic Hot-Air Balloon Flight",
+    title: "Classic Flight",
     price: "420",
     features: [
       {
@@ -56,9 +56,9 @@ export const flights = [
     ]
   },
   {
-    imageSrc: "/images/traditionnel.png",
-    imageAlt: "Romantic Sunset Flight for Two",
-    title: "Romantic Sunset Flight for Two",
+    imageSrc: "/images/hotair.png",
+    imageAlt: "Private Hot-Air Balloon Flight",
+    title: "Private Flight",
     price: "700",
     features: [
       {
@@ -82,12 +82,11 @@ export const flights = [
         description: "A romantic picnic basket with Moroccan treats to enjoy post-flight.",
       }
     ]
-
   },
   {
     imageSrc: "/images/balloon-basket.png",
     imageAlt: "Pack Anniversaire en Montgolfière",
-    title: "Pack Anniversaire en Montgolfière",
+    title: "Anniversaire Flight",
     price: "Sur devis",
     features: [
       {
@@ -115,7 +114,7 @@ export const flights = [
   {
     imageSrc: "/images/mariage1.png",
     imageAlt: "Pack Demande en Mariage ",
-    title: "Pack Demande en Mariage en Montgolfière",
+    title: "Mariage Flight",
     price: "Sur devis",
     features: [
       {
@@ -133,7 +132,6 @@ export const flights = [
         label: "Photos & Vidéo",
         description: "Photos souvenir + option vidéo prises discrètement pendant le vol et la demande.",
       },
-      
       {
         icon: "🥐",
         label: "Petit déjeuner romantique",

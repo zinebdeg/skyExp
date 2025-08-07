@@ -9,8 +9,10 @@ import RoyalFlightPage from './pages/royalFlight/RoyalFlight';
 import ClassicFlightPage from './pages/classicFlight/ClassicFlight';
 import Footer from './components/footer/Footer';
 import About from './pages/about/About';
-import AnniversaireDetails from './pages/about/AnniversaireDetails';
-import MariageDetails from './pages/about/MariageDetails';
+
+import AnniversaireDetails from './pages/anniversaire/AnniversaireDetails';
+import MariageDetails from './pages/mariage/MariageDetails';
+import Contact from './pages/contact/contact';
 
 function App() {
   const [showContent, setShowContent] = useState(false);
@@ -29,12 +31,15 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/booking" element={<BookingPage />} />
+
+     
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/private-flight" element={<PrivateFlightPage />} />
         <Route path="/royal-flight" element={<RoyalFlightPage />} />
         <Route path="/classic-flight" element={<ClassicFlightPage />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/anniversaire-details" element={<AnniversaireDetails />} />
-        <Route path="/mariage-details" element={<MariageDetails />} />
+        <Route path="/anniversaire-flight" element={<AnniversaireDetails />} />
+        <Route path="/mariage-flight" element={<MariageDetails />} />
       </Routes>
          <Footer/>
     </Router>

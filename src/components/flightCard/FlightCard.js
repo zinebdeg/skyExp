@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function FlightCard({
   imageSrc,
@@ -6,7 +7,8 @@ export default function FlightCard({
   title,
   price,
   features = [],
-  buttonText = 'Book now'
+  buttonText = 'Book now',
+  imageLink
 }) {
   return (
     <div className="flex flex-col p-8 gap-8 w-full bg-[#eec09a] rounded-2xl max-w-full md:max-w-none">
@@ -22,12 +24,23 @@ export default function FlightCard({
       <div className="flex flex-col md:flex-row gap-8 items-stretch">
         {/* Image Section */}
         <div className="w-full md:w-2/5 flex items-center justify-center">
-          <img 
-            src={imageSrc} 
-            alt={imageAlt}
-            className="rounded-2xl object-cover w-full h-[300px] md:h-[340px]"
-            style={{ objectPosition: 'center' }}
-          />
+          {imageLink ? (
+            <Link to={imageLink} className="block w-full h-full">
+              <img 
+                src={imageSrc} 
+                alt={imageAlt}
+                className="rounded-2xl object-cover w-full h-[300px] md:h-[340px] transition-transform hover:scale-105 cursor-pointer"
+                style={{ objectPosition: 'center' }}
+              />
+            </Link>
+          ) : (
+            <img 
+              src={imageSrc} 
+              alt={imageAlt}
+              className="rounded-2xl object-cover w-full h-[300px] md:h-[340px]"
+              style={{ objectPosition: 'center' }}
+            />
+          )}
         </div>
 
         {/* Details Section */}
@@ -45,12 +58,13 @@ export default function FlightCard({
           </ul>
 
           <div className="flex justify-end mt-8">
-            <button className="bg-[#b94c2a] hover:bg-orange-600 text-white px-8 py-3 rounded-md font-bold text-lg uppercase tracking-wider transition-colors shadow-lg">
+            <Link to="/booking" className="bg-[#b94c2a] hover:bg-orange-600 text-white px-8 py-3 rounded-md font-bold text-lg uppercase tracking-wider transition-colors shadow-lg">
               {buttonText}
-            </button>
+            </Link>
           </div>
         </div>
       </div>
     </div>
   );
 }
+            

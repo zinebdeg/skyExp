@@ -5,8 +5,8 @@ export default function HomePage() {
   return (
           <div className="min-h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('/images/landing.png')" }}>
       {/* Hero Section */}
-            <main className="relative flex items-center justify-center h-[calc(100vh-144px)] w-full">
-              <div className="relative z-10 flex flex-col items-center justify-center w-full h-full text-center">
+            <main className=" flex items-center justify-center h-[calc(100vh-144px)] w-full">
+              <div className="  flex flex-col items-center justify-center w-full h-full text-center">
           <div className="content flex flex-col items-center justify-center gap-80">
 
      <h1 className="text-3xl md:text-5xl font-bold text-black mb-8 drop-shadow-xl">
@@ -20,13 +20,32 @@ export default function HomePage() {
         </div>
       </main>
             {/* Our Flights Section - Version maquette */}
-            <section className="w-full bg-[#ded1c7] py-12 ">
+            <section id="flight" className="w-full bg-[#ded1c7] py-12 ">
               <div className="max-w-5xl mx-auto rounded-2xl  p-8 md:p-12 flex flex-col gap-12  " >
                 <h2 className="text-6xl font-extrabold text-center mb-6 text-[#2c2c2c]">Our Flights</h2>
-             
-             {flights.map((flight, index) => (
-  <FlightCard key={index} {...flight}  />
-))}
+                <div className="flex flex-wrap justify-center gap-4 mb-8">
+                  <a href="#private-flight" className="bg-white rounded-full px-6 py-2 font-bold text-[#a43518] shadow hover:bg-orange-50 transition">Private Flight</a>
+                  <a href="#royal-flight" className="bg-white rounded-full px-6 py-2 font-bold text-[#a43518] shadow hover:bg-orange-50 transition">Royal Flight</a>
+                  <a href="#classic-flight" className="bg-white rounded-full px-6 py-2 font-bold text-[#a43518] shadow hover:bg-orange-50 transition">Classic Flight</a>
+                  <a href="#anniversaire-flight" className="bg-white rounded-full px-6 py-2 font-bold text-[#a43518] shadow hover:bg-orange-50 transition">Anniversaire Flight</a>
+                  <a href="#mariage-flight" className="bg-white rounded-full px-6 py-2 font-bold text-[#a43518] shadow hover:bg-orange-50 transition">Mariage Flight</a>
+                </div>
+                {flights.map((flight, index) => {
+                  // Map flight title to anchor id and route
+                  const anchorMap = {
+                    'Private Flight': { id: 'private-flight', route: '/private-flight' },
+                    'Royal Flight': { id: 'royal-flight', route: '/royal-flight' },
+                    'Classic Flight': { id: 'classic-flight', route: '/classic-flight' },
+                    'Anniversaire Flight': { id: 'anniversaire-flight', route: '/anniversaire-flight' },
+                    'Mariage Flight': { id: 'mariage-flight', route: '/mariage-flight' },
+                  };
+                  const anchor = anchorMap[flight.title] || { id: '', route: '/' };
+                  return (
+                    <div id={anchor.id} key={index}>
+                      <FlightCard {...flight} imageLink={anchor.route} />
+                    </div>
+                  );
+                })}
               </div>
             </section>
 
@@ -122,7 +141,7 @@ export default function HomePage() {
             </section>
 
             {/* Section ABOUT US */}
-            <section className="w-full bg-[#f5ede6] py-16">
+            <section id="contact" className="w-full bg-[#f5ede6] py-16">
               <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-8 px-4">
                 {/* Image à gauche */}
                 <div className="w-full md:w-1/2 flex justify-center">

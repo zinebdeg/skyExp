@@ -5,7 +5,7 @@ const Footer = () => {
               <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-start gap-8">
                 {/* Bloc gauche : logo et contact */}
                 <div className="flex-1 min-w-[220px] flex flex-col gap-3">
-                  <img src="/images/skyexp.png" alt="SKY EXPERIENCE Logo" className="h-10 mb-2" />
+                  <img src="/images/skyexp.png" alt="SKY EXPERIENCE Logo" className="h-14 w-auto mb-2" style={{ maxWidth: 160 }} />
                   <div className="font-bold text-sm mb-1">ADRESS:</div>
                   <div className="text-sm font-bold underline leading-tight">3ème Étage Bureau N° 16, Angle Bd<br/>Moulay Rachid, Marrakech 40000</div>
                   <div className="flex items-center gap-2 mt-2">

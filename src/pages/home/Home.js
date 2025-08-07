@@ -13,7 +13,7 @@ export default function HomePage() {
      <h1 className="text-3xl md:text-5xl font-bold text-black mb-8 drop-shadow-xl">
                   Soar Above Marrakech in Hot air Balloon
           </h1>
-                <Link to="/booking" className="bg-[#a43518] hover:bg-orange-600 text-white px-8 py-4 rounded-md font-bold text-lg uppercase tracking-wider transition-colors shadow-lg">
+                <Link to="/booking" className="bg-[#a43518] hover:bg-orange-600 hover:scale-110 transition-all duration-300 text-white px-8 py-4 rounded-md font-bold text-lg uppercase tracking-wider transition-colors shadow-lg">
             BOOK YOUR FLIGHT NOW
                 </Link>
           </div>
@@ -74,7 +74,7 @@ export default function HomePage() {
                 <p className="text-2xl text-[#eaeaea] text-center mb-12">Providing The Best Services For Our Customers</p>
                 <div className="flex flex-col md:flex-row gap-8 justify-center items-stretch">
                   {/* Témoignage 1 */}
-                  <div className="bg-white rounded-2xl shadow-lg p-6 flex-1 max-w-sm mx-auto flex flex-col gap-2 transform rotate-[-3deg]">
+                  <div className="bg-white rounded-2xl hover:scale-110 transition-all duration-300 shadow-lg p-6 flex-1 max-w-sm mx-auto flex flex-col gap-2 transform rotate-[-3deg]">
                     <div className="flex items-center gap-3 mb-2">
                       <div className="w-12 h-12 rounded-lg bg-[#5a2323] flex items-center justify-center text-white text-2xl font-bold">L</div>
                       <div>
@@ -90,7 +90,7 @@ export default function HomePage() {
                     </div>
                   </div>
                   {/* Témoignage 2 */}
-                  <div className="bg-white rounded-2xl shadow-lg p-6 flex-1 max-w-sm mx-auto flex flex-col gap-2 transform rotate-[2deg]">
+                  <div className="bg-white rounded-2xl hover:scale-110 transition-all duration-300 shadow-lg p-6 flex-1 max-w-sm mx-auto flex flex-col gap-2 transform rotate-[2deg]">
                     <div className="flex items-center gap-3 mb-2">
                       <img src="/images/avatar1.png" alt="Cecile F" className="w-12 h-12 rounded-lg object-cover" />
                       <div>
@@ -106,7 +106,7 @@ export default function HomePage() {
                     </div>
                   </div>
                   {/* Témoignage 3 */}
-                  <div className="bg-white rounded-2xl shadow-lg p-6 flex-1 max-w-sm mx-auto flex flex-col gap-2 transform rotate-[-2deg]">
+                  <div className="bg-white rounded-2xl hover:scale-110 transition-all duration-300 shadow-lg p-6 flex-1 max-w-sm mx-auto flex flex-col gap-2 transform rotate-[-2deg]">
                     <div className="flex items-center gap-3 mb-2">
                       <img src="/images/avatar2.png" alt="Yassine AIT BELLA" className="w-12 h-12 rounded-lg object-cover" />
                       <div>
@@ -128,10 +128,10 @@ export default function HomePage() {
 
             {/* Section ABOUT US */}
             <section id="contact" className="w-full bg-[#f5ede6] py-16">
-              <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-8 px-4">
+              <div className="max-w-5xl mx-auto flex flex-col md:flex-row overflow-hidden items-center gap-8 px-4">
                 {/* Image à gauche */}
                 <div className="w-full md:w-1/2 flex justify-center">
-                  <img src="/images/about.png" alt="About Sky Experience" className="rounded-lg object-cover w-full max-w-sm h-64" />
+                  <img src="/images/about.png" alt="About Sky Experience" className="rounded-lg object-cover hover:scale-110 transition-all duration-300 w-full max-w-sm h-64" />
                 </div>
                 {/* Contenu à droite */}
                 <div className="w-full md:w-1/2 flex flex-col justify-center items-start gap-6">

@@ -58,7 +58,7 @@ export default function FlightCard({
           </ul>
 
           <div className="flex justify-end mt-8">
-            <Link to="/booking" className="bg-[#b94c2a] hover:bg-orange-600 text-white px-8 py-3 rounded-md font-bold text-lg uppercase tracking-wider transition-colors shadow-lg">
+            <Link to="/booking" className="bg-[#b94c2a] hover:scale-110 transition-all duration-300 hover:bg-orange-600 text-white px-8 py-3 rounded-md font-bold text-lg uppercase tracking-wider transition-colors shadow-lg">
               {buttonText}
             </Link>
           </div>

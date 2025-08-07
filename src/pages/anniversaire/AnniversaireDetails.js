@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "../../App.css";
+import AnimatedCard from "../../components/flightCard";
 
 const AnniversaireDetails = () => {
   // Images pour la colonne de miniatures
@@ -164,7 +165,9 @@ const AnniversaireDetails = () => {
       {/* FLIGHT suggestion section */}
       <div className="w-full max-w-6xl mx-auto mb-0 px-4">
         <h2 className="text-2xl md:text-3xl font-extrabold text-center mb-8">FLIGHT suggestion</h2>
+        
         <div className="flex flex-col md:flex-row gap-8 justify-center items-stretch mb-16">
+          <AnimatedCard />
           {/* CLASSIC */}
           <div className="relative bg-white rounded-2xl shadow-lg flex-1 flex flex-col overflow-hidden max-w-xs mx-auto">
             <img src="/images/classic.png" alt="Classic" className="w-full h-48 object-cover" />

@@ -43,7 +43,7 @@ export default function Header() {
               <Link to="/contact" className={`font-bold hover:text-orange-500 transition-colors${isActive("/contact") ? " text-orange-500 underline" : ""}`}>Contact</Link>
           </nav>
 
-           <Link to="/booking" className="bg-[#a43518] text-white px-6 py-2 rounded-full font-bold  hover:bg-orange-600 transition">
+           <Link to="/booking" className="bg-[#a43518] hover:scale-110 transition-all duration-300 text-white px-6 py-2 rounded-full font-bold  hover:bg-orange-600 transition">
               BOOK NOW
           </Link>
         </div>

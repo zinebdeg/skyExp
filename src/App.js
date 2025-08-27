@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/header/Header';
 import HomePage from './pages/home/Home';
 import BookingPage from './pages/Booking/Booking';
 import PrivateFlightPage from './pages/PrivateFlight/PrivateFlight';
 import RoyalFlightPage from './pages/royalFlight/RoyalFlight';
 import ClassicFlightPage from './pages/classicFlight/ClassicFlight';
-import Footer from './components/footer/Footer';
 import About from './pages/about/About';
-
 import AnniversaireDetails from './pages/anniversaire/AnniversaireDetails';
 import MariageDetails from './pages/mariage/MariageDetails';
 import Contact from './pages/contact/contact';
+import Layout from './admin/layout/layout';
+import MainLayout from './pages/layout/MainLayout';
+// Import admin pages
+import Dashboard from './admin/Dashboard/Dashboard';
+import AdminFlights from './admin/Flights/Flights';
+import AdminReservations from './admin/Reservations/Reservations';
+import AdminContactMessages from './admin/ContactMessages/ContactMessages';
 
 function App() {
   const [showContent, setShowContent] = useState(false);
@@ -27,21 +31,28 @@ function App() {
 
   return (
     <Router>
-      <Header />
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/booking" element={<BookingPage />} />
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/booking" element={<BookingPage />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/private-flight" element={<PrivateFlightPage />} />
+          <Route path="/royal-flight" element={<RoyalFlightPage />} />
+          <Route path="/classic-flight" element={<ClassicFlightPage />} />
+          <Route path="/anniversaire-flight" element={<AnniversaireDetails />} />
+          <Route path="/mariage-flight" element={<MariageDetails />} />
+        </Route>
 
-     
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/private-flight" element={<PrivateFlightPage />} />
-        <Route path="/royal-flight" element={<RoyalFlightPage />} />
-        <Route path="/classic-flight" element={<ClassicFlightPage />} />
-        <Route path="/anniversaire-flight" element={<AnniversaireDetails />} />
-        <Route path="/mariage-flight" element={<MariageDetails />} />
+        {/* Admin Routes */}
+        <Route path="/admin/*" element={<Layout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="flights" element={<AdminFlights />} />
+          <Route path="reservations" element={<AdminReservations />} />
+          <Route path="messages" element={<AdminContactMessages />} />
+        </Route>
       </Routes>
-         <Footer/>
     </Router>
   );
 }

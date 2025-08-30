@@ -16,7 +16,6 @@ import MainLayout from './pages/layout/MainLayout';
 import Dashboard from './admin/Dashboard/Dashboard';
 import AdminFlights from './admin/Flights/Flights';
 import AdminReservations from './admin/Reservations/Reservations';
-import AdminContactMessages from './admin/ContactMessages/ContactMessages';
 
 function App() {
   const [showContent, setShowContent] = useState(false);
@@ -50,7 +49,6 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="flights" element={<AdminFlights />} />
           <Route path="reservations" element={<AdminReservations />} />
-          <Route path="messages" element={<AdminContactMessages />} />
         </Route>
       </Routes>
     </Router>

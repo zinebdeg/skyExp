@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { 
   Home, 
   Plane, 
   Calendar, 
-  MessageSquare, 
   Menu, 
   X, 
-  Bell, 
-  Search,
   Settings,
   ChevronRight
 } from 'lucide-react';
@@ -42,13 +39,6 @@ const Layout = () => {
       path: '/admin/reservations',
       description: 'Booking Management' 
     },
-    { 
-      id: 'messages', 
-      label: 'Contact Messages', 
-      icon: MessageSquare, 
-      path: '/admin/messages',
-      description: 'Customer Communications' 
-    }
   ];
 
   const Sidebar = () => (

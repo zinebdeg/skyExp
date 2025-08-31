@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import HomePage from './pages/home/Home';
 import BookingPage from './pages/Booking/Booking';
 import PrivateFlightPage from './pages/PrivateFlight/PrivateFlight';
@@ -16,6 +16,21 @@ import MainLayout from './pages/layout/MainLayout';
 import Dashboard from './admin/Dashboard/Dashboard';
 import AdminFlights from './admin/Flights/Flights';
 import AdminReservations from './admin/Reservations/Reservations';
+import Login from './auth/Login/Login';
+
+
+const ProtectedRoute = ({ children }) => {
+  const navigate = useNavigate();
+  const token = localStorage.getItem('adminToken');
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login');
+    }
+  }, [token, navigate]);
+
+  return token ? children : null;
+};
 
 function App() {
   const [showContent, setShowContent] = useState(false);
@@ -44,12 +59,13 @@ function App() {
         </Route>
 
         {/* Admin Routes */}
-        <Route path="/admin/*" element={<Layout />}>
+        <Route path="/admin/*" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route index element={<Dashboard />} />
-          <Route path="dashboard" element={<Dashboard />} />
           <Route path="flights" element={<AdminFlights />} />
           <Route path="reservations" element={<AdminReservations />} />
         </Route>
+
+        <Route path='/login' element={<Login />} />
       </Routes>
     </Router>
   );

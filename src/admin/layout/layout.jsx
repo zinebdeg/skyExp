@@ -7,7 +7,8 @@ import {
   Menu, 
   X, 
   Settings,
-  ChevronRight
+  ChevronRight,
+  LogOutIcon
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -17,12 +18,18 @@ const Layout = () => {
   const navigate = useNavigate();
   const currentPath = location.pathname;
 
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken');
+    // Also call your backend logout endpoint if you have one
+    window.location.href = '/login';
+  };
+
   const menuItems = [
     { 
       id: 'dashboard', 
       label: 'Dashboard', 
       icon: Home, 
-      path: '/admin/dashboard',
+      path: '/admin',
       description: 'Overview & Analytics' 
     },
     { 
@@ -104,20 +111,19 @@ const Layout = () => {
         })}
       </nav>
 
-      {/* Bottom Section */}
-      <div className="flex-shrink-0 px-4 py-6">
-        <div className="bg-[#b94c2a]/10 backdrop-blur-sm rounded-2xl p-4 border border-[#b94c2a]/20">
+
+      <button onClick={handleLogout} className="flex-shrink-0 px-4 py-6">
+        <div className="bg-[#b94c2a]/10 hover:bg-[#b94c2a]/20 transition-colors duration-300 backdrop-blur-sm rounded-2xl p-4 border border-[#b94c2a]/20">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 bg-[#b94c2a] rounded-xl flex items-center justify-center">
-              <Settings className="text-white" size={20} />
+              <LogOutIcon className="text-white" size={20} />
             </div>
             <div>
-              <p className="text-[#b94c2a] font-semibold">Settings</p>
-              <p className="text-[#b94c2a]/60 text-sm">System Preferences</p>
+              <p className="text-[#b94c2a] font-semibold">Logout</p>
             </div>
           </div>
         </div>
-      </div>
+      </button>
     </div>
   );
 

@@ -27,7 +27,7 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, formData);
+      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, formData, {withCredentials: true});
       
       if (response.data.success) {
         // Store token in localStorage if needed

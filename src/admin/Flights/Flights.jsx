@@ -11,74 +11,31 @@ import {
   Upload,
   Search,
   Filter,
-  User
+  User,
+  Loader,
+  Trash2Icon
 } from 'lucide-react';
+import axios from 'axios';
+import API_BASE_URL from '../../config/api';
 
 const AdminFlights = () => {
-  // Sample data - in real app this would come from API
-  const [flights, setFlights] = useState([
-    {
-      _id: '1',
-      title: 'Romantic Sunset Flight over Atlas Mountains',
-      overview: 'Experience breathtaking views of the Atlas Mountains during golden hour with your loved one.',
-      mainImage: 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?w=400',
-      images: [
-        'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?w=400',
-        'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400'
-      ],
-      price: 299,
-      rating: 4.8,
-      category: 'romantic offer',
-      program: [
-        { miniTitle: 'Pre-flight briefing', text: 'Safety introduction and route overview' },
-        { miniTitle: 'Scenic flight', text: '45-minute flight over stunning landscapes' },
-        { miniTitle: 'Champagne service', text: 'Complimentary champagne and snacks' }
-      ],
-      reviews: [
-        {
-          name: 'Sarah Johnson',
-          avatar: '',
-          rating: 5,
-          comment: 'Absolutely magical experience! The views were incredible.',
-          createdAt: new Date().toISOString()
-        }
-      ],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    },
-    {
-      _id: '2',
-      title: 'VIP Desert Adventure Flight',
-      overview: 'Luxury helicopter tour over the Sahara Desert with exclusive landing experience.',
-      mainImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400',
-      images: ['https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400'],
-      price: 599,
-      rating: 4.9,
-      category: 'vip',
-      program: [
-        { miniTitle: 'VIP lounge access', text: 'Exclusive pre-flight lounge experience' },
-        { miniTitle: 'Desert flight', text: 'Scenic flight over Sahara dunes' },
-        { miniTitle: 'Desert landing', text: 'Private landing with traditional tea ceremony' }
-      ],
-      reviews: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
-  ]);
-
+  const [flights, setFlights] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [modalMode, setModalMode] = useState('create'); // 'create', 'edit', 'view'
+  const [modalMode, setModalMode] = useState('create');
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [uploading, setUploading] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
     title: '',
     overview: '',
-    mainImage: '',
-    images: [''],
+    mainImage: null,
+    images: [],
     price: '',
     rating: 0,
     category: 'vip',
@@ -93,6 +50,38 @@ const AdminFlights = () => {
     comment: ''
   });
 
+  // Get auth token
+  const getAuthToken = () => {
+    return localStorage.getItem('adminToken');
+  };
+
+  // Configure axios defaults
+  useEffect(() => {
+    const token = getAuthToken();
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
+  }, []);
+
+  // Fetch flights from API
+  const fetchFlights = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_BASE_URL}/api/flights`, {withCredentials: true});
+      setFlights(response.data);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching flights:', err);
+      setError('Failed to load flights. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFlights();
+  }, []);
+
   // Filter flights based on search and category
   const filteredFlights = flights.filter(flight => {
     const matchesSearch = flight.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -106,8 +95,8 @@ const AdminFlights = () => {
     setFormData({
       title: '',
       overview: '',
-      mainImage: '',
-      images: [''],
+      mainImage: null,
+      images: [],
       price: '',
       rating: 0,
       category: 'vip',
@@ -135,11 +124,13 @@ const AdminFlights = () => {
         title: flight.title,
         overview: flight.overview,
         mainImage: flight.mainImage,
-        images: flight.images.length > 0 ? flight.images : [''],
+        images: flight.images || [],
         price: flight.price.toString(),
         rating: flight.rating,
         category: flight.category,
-        program: flight.program.length > 0 ? flight.program : [{ miniTitle: '', text: '' }]
+        program: flight.program && flight.program.length > 0 
+          ? flight.program 
+          : [{ miniTitle: '', text: '' }]
       });
     } else if (mode === 'create') {
       resetForm();
@@ -170,67 +161,140 @@ const AdminFlights = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setUploading(true);
     
-    const flightData = {
-      ...formData,
-      price: parseFloat(formData.price),
-      images: formData.images.filter(img => img.trim() !== ''),
-      program: formData.program.filter(prog => prog.miniTitle && prog.text),
-      reviews: modalMode === 'edit' ? selectedFlight.reviews : [],
-      createdAt: modalMode === 'edit' ? selectedFlight.createdAt : new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    if (modalMode === 'create') {
-      const newFlight = {
-        ...flightData,
-        _id: Date.now().toString()
-      };
-      setFlights([...flights, newFlight]);
-    } else if (modalMode === 'edit') {
-      setFlights(flights.map(flight => 
-        flight._id === selectedFlight._id 
-          ? { ...flight, ...flightData }
-          : flight
-      ));
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('title', formData.title);
+      formDataToSend.append('overview', formData.overview);
+      formDataToSend.append('price', formData.price);
+      formDataToSend.append('category', formData.category);
+      formDataToSend.append('program', JSON.stringify(formData.program));
+      
+      // Append main image if it's a file
+      if (formData.mainImage instanceof File) {
+        formDataToSend.append('mainImage', formData.mainImage);
+      }
+      
+      // Append additional images
+      formData.images.forEach((image, index) => {
+        if (image instanceof File) {
+          formDataToSend.append('images', image);
+        }
+      });
+      
+      let response;
+      if (modalMode === 'create') {
+        response = await axios.post(`${API_BASE_URL}/api/flights`, formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          withCredentials: true
+        });
+        setFlights([...flights, response.data]);
+      } else if (modalMode === 'edit') {
+        response = await axios.put(`${API_BASE_URL}/api/flights/${selectedFlight._id}`, formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          withCredentials: true
+        });
+        setFlights(flights.map(flight => 
+          flight._id === selectedFlight._id ? response.data : flight
+        ));
+      }
+      
+      closeModal();
+    } catch (err) {
+      console.error('Error saving flight:', err);
+      setError('Failed to save flight. Please try again.');
+    } finally {
+      setUploading(false);
     }
-
-    closeModal();
   };
 
   // Handle review submission
-  const handleReviewSubmit = (e) => {
+  const handleReviewSubmit = async (e) => {
     e.preventDefault();
     
     if (!selectedFlight) return;
     
-    const newReview = {
-      ...reviewForm,
-      createdAt: new Date().toISOString()
-    };
-    
-    const updatedFlight = {
-      ...selectedFlight,
-      reviews: [...selectedFlight.reviews, newReview],
-      // Update overall rating (simple average)
-      rating: selectedFlight.reviews.length > 0 
-        ? (selectedFlight.rating * selectedFlight.reviews.length + parseFloat(reviewForm.rating)) / (selectedFlight.reviews.length + 1)
-        : parseFloat(reviewForm.rating)
-    };
-    
-    setFlights(flights.map(flight => 
-      flight._id === selectedFlight._id ? updatedFlight : flight
-    ));
-    
-    closeReviewModal();
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/api/flights/${selectedFlight._id}/reviews`, 
+        reviewForm , {withCredentials: true}
+      );
+      
+      setFlights(flights.map(flight => 
+        flight._id === selectedFlight._id 
+          ? { 
+              ...flight, 
+              reviews: [...flight.reviews, response.data.review],
+              rating: response.data.newRating
+            } 
+          : flight
+      ));
+      
+      closeReviewModal();
+    } catch (err) {
+      console.error('Error adding review:', err);
+      setError('Failed to add review. Please try again.');
+    }
   };
 
+  const handleDeleteReview = async (flightId, reviewId) => {
+  try {
+    const response = await axios.delete(
+      `${API_BASE_URL}/api/flights/${flightId}/reviews/${reviewId}`,
+      { withCredentials: true }
+    );
+
+    // Update state
+    setFlights(prevFlights =>
+      prevFlights.map(flight =>
+        flight._id === flightId
+          ? {
+              ...flight,
+              reviews: flight.reviews.filter(r => r._id.toString() !== reviewId.toString()),
+              rating: response.data.newRating
+            }
+          : flight
+      )
+    );
+  } catch (err) {
+    console.error("Error deleting review:", err);
+    setError("Failed to delete review. Please try again.");
+  }
+};
+
+
+
   // Delete flight
-  const deleteFlight = (flightId) => {
-    if (window.confirm('Are you sure you want to delete this flight?')) {
+  const deleteFlight = async (flightId) => {
+    if (!window.confirm('Are you sure you want to delete this flight?')) return;
+    
+    try {
+      await axios.delete(`${API_BASE_URL}/api/flights/${flightId}`, {withCredentials: true});
       setFlights(flights.filter(flight => flight._id !== flightId));
+    } catch (err) {
+      console.error('Error deleting flight:', err);
+      setError('Failed to delete flight. Please try again.');
+    }
+  };
+
+  // Handle image upload
+  const handleImageUpload = (e, field, index = null) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    if (field === 'mainImage') {
+      setFormData({ ...formData, mainImage: file });
+    } else if (field === 'images' && index !== null) {
+      const newImages = [...formData.images];
+      newImages[index] = file;
+      setFormData({ ...formData, images: newImages });
     }
   };
 
@@ -261,7 +325,7 @@ const AdminFlights = () => {
   const addImageField = () => {
     setFormData({
       ...formData,
-      images: [...formData.images, '']
+      images: [...formData.images, null]
     });
   };
 
@@ -273,15 +337,40 @@ const AdminFlights = () => {
     });
   };
 
-  // Update image field
-  const updateImageField = (index, value) => {
-    const newImages = [...formData.images];
-    newImages[index] = value;
-    setFormData({ ...formData, images: newImages });
+  // Display image preview or URL
+  const displayImage = (image) => {
+    if (image instanceof File) {
+      return URL.createObjectURL(image);
+    }
+    return image;
   };
+
+  if (loading) {
+    return (
+      <div className="p-8 bg-gradient-to-br from-orange-50 to-amber-50 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="animate-spin mx-auto text-[#b94c2a]" size={48} />
+          <p className="text-[#b94c2a] mt-4">Loading flights...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 bg-gradient-to-br from-orange-50 to-amber-50 min-h-screen">
+      {/* Error message */}
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
+          <span className="block sm:inline">{error}</span>
+          <button 
+            className="absolute top-0 right-0 p-3" 
+            onClick={() => setError(null)}
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-6">
@@ -355,7 +444,7 @@ const AdminFlights = () => {
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center gap-1">
                   <Star className="text-yellow-500 fill-current" size={16} />
-                  <span className="text-[#b94c2a] font-semibold">{flight.rating.toFixed(1)}</span>
+                  <span className="text-[#b94c2a] font-semibold">{flight.rating?.toFixed(1) || '0.0'}</span>
                 </div>
                 <div className="text-2xl font-bold text-[#b94c2a]">
                   ${flight.price}
@@ -455,7 +544,7 @@ const AdminFlights = () => {
                         <div className="text-[#b94c2a]/60 text-sm">Rating</div>
                         <div className="text-2xl font-bold text-[#b94c2a] flex items-center gap-1">
                           <Star className="text-yellow-500 fill-current" size={20} />
-                          {selectedFlight.rating.toFixed(1)}
+                          {selectedFlight.rating?.toFixed(1) || '0.0'}
                         </div>
                       </div>
                       <div className="bg-[#eec09a]/20 p-4 rounded-xl">
@@ -464,26 +553,28 @@ const AdminFlights = () => {
                       </div>
                       <div className="bg-[#eec09a]/20 p-4 rounded-xl">
                         <div className="text-[#b94c2a]/60 text-sm">Reviews</div>
-                        <div className="text-2xl font-bold text-[#b94c2a]">{selectedFlight.reviews.length}</div>
+                        <div className="text-2xl font-bold text-[#b94c2a]">{selectedFlight.reviews?.length || 0}</div>
                       </div>
                     </div>
                   </div>
 
                   {/* Program */}
-                  <div>
-                    <h4 className="text-xl font-bold text-[#b94c2a] mb-4">Flight Program</h4>
-                    <div className="space-y-3">
-                      {selectedFlight.program.map((item, index) => (
-                        <div key={index} className="bg-[#eec09a]/10 p-4 rounded-xl">
-                          <h5 className="font-semibold text-[#b94c2a] mb-2">{item.miniTitle}</h5>
-                          <p className="text-[#b94c2a]/70">{item.text}</p>
-                        </div>
-                      ))}
+                  {selectedFlight.program && selectedFlight.program.length > 0 && (
+                    <div>
+                      <h4 className="text-xl font-bold text-[#b94c2a] mb-4">Flight Program</h4>
+                      <div className="space-y-3">
+                        {selectedFlight.program.map((item, index) => (
+                          <div key={index} className="bg-[#eec09a]/10 p-4 rounded-xl">
+                            <h5 className="font-semibold text-[#b94c2a] mb-2">{item.miniTitle}</h5>
+                            <p className="text-[#b94c2a]/70">{item.text}</p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Reviews */}
-                  {selectedFlight.reviews.length > 0 && (
+                  {selectedFlight.reviews && selectedFlight.reviews.length > 0 && (
                     <div>
                       <h4 className="text-xl font-bold text-[#b94c2a] mb-4">Reviews</h4>
                       <div className="space-y-4">
@@ -513,6 +604,11 @@ const AdminFlights = () => {
                             <p className="text-[#b94c2a]/70">{review.comment}</p>
                             <div className="text-sm text-[#b94c2a]/50 mt-2">
                               {new Date(review.createdAt).toLocaleDateString()}
+                            </div>
+                            <div className='flex justify-end'>
+                              <button onClick={()=> handleDeleteReview(selectedFlight._id, review._id)}>
+                                <Trash2Icon className='text-red-500' />
+                              </button>
                             </div>
                           </div>
                         ))}
@@ -594,21 +690,32 @@ const AdminFlights = () => {
 
                   {/* Main Image */}
                   <div>
-                    <label className="block text-[#b94c2a] font-semibold mb-2">Main Image URL</label>
-                    <input
-                      type="url"
-                      required
-                      value={formData.mainImage}
-                      onChange={(e) => setFormData({ ...formData, mainImage: e.target.value })}
-                      className="w-full p-3 border border-[#eec09a]/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b94c2a]/30"
-                      placeholder="https://example.com/image.jpg"
-                    />
+                    <label className="block text-[#b94c2a] font-semibold mb-2">
+                      Main Image {modalMode === 'edit' && '(Leave empty to keep current)'}
+                    </label>
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, 'mainImage')}
+                        className="w-full p-3 border border-[#eec09a]/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b94c2a]/30"
+                      />
+                      {formData.mainImage && (
+                        <img 
+                          src={displayImage(formData.mainImage)} 
+                          alt="Preview" 
+                          className="w-16 h-16 object-cover rounded-lg"
+                        />
+                      )}
+                    </div>
                   </div>
 
                   {/* Additional Images */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="block text-[#b94c2a] font-semibold">Additional Images</label>
+                      <label className="block text-[#b94c2a] font-semibold">
+                        Additional Images {modalMode === 'edit' && '(Leave empty to keep current)'}
+                      </label>
                       <button
                         type="button"
                         onClick={addImageField}
@@ -619,14 +726,20 @@ const AdminFlights = () => {
                     </div>
                     <div className="space-y-2">
                       {formData.images.map((image, index) => (
-                        <div key={index} className="flex gap-2">
+                        <div key={index} className="flex gap-2 items-center">
                           <input
-                            type="url"
-                            value={image}
-                            onChange={(e) => updateImageField(index, e.target.value)}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleImageUpload(e, 'images', index)}
                             className="flex-1 p-3 border border-[#eec09a]/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b94c2a]/30"
-                            placeholder="https://example.com/image.jpg"
                           />
+                          {image && (
+                            <img 
+                              src={displayImage(image)} 
+                              alt="Preview" 
+                              className="w-16 h-16 object-cover rounded-lg"
+                            />
+                          )}
                           {formData.images.length > 1 && (
                             <button
                               type="button"
@@ -700,10 +813,17 @@ const AdminFlights = () => {
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 bg-[#b94c2a] text-white py-3 px-6 rounded-xl hover:bg-[#a03d22] transition-colors flex items-center justify-center gap-2 font-semibold"
+                      disabled={uploading}
+                      className="flex-1 bg-[#b94c2a] text-white py-3 px-6 rounded-xl hover:bg-[#a03d22] disabled:opacity-50 transition-colors flex items-center justify-center gap-2 font-semibold"
                     >
-                      <Save size={20} />
-                      {modalMode === 'create' ? 'Create Flight' : 'Update Flight'}
+                      {uploading ? (
+                        <Loader className="animate-spin" size={20} />
+                      ) : (
+                        <>
+                          <Save size={20} />
+                          {modalMode === 'create' ? 'Create Flight' : 'Update Flight'}
+                        </>
+                      )}
                     </button>
                   </div>
                 </form>

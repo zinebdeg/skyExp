@@ -68,7 +68,14 @@ const AdminFlights = () => {
     try {
       setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/api/flights`, {withCredentials: true});
-      setFlights(response.data);
+      
+      // Ensure each flight has a reviews array
+      const flightsWithReviews = response.data.map(flight => ({
+        ...flight,
+        reviews: flight.reviews || []
+      }));
+      
+      setFlights(flightsWithReviews);
       setError(null);
     } catch (err) {
       console.error('Error fetching flights:', err);
@@ -215,7 +222,7 @@ const AdminFlights = () => {
     }
   };
 
-  // Handle review submission
+  // Handle review submission - FIXED
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     
@@ -224,18 +231,33 @@ const AdminFlights = () => {
     try {
       const response = await axios.post(
         `${API_BASE_URL}/api/flights/${selectedFlight._id}/reviews`, 
-        reviewForm , {withCredentials: true}
+        reviewForm, 
+        { withCredentials: true }
       );
       
-      setFlights(flights.map(flight => 
-        flight._id === selectedFlight._id 
-          ? { 
-              ...flight, 
-              reviews: [...flight.reviews, response.data.review],
-              rating: response.data.newRating
-            } 
-          : flight
-      ));
+      // Update flights state with the complete updated flight data from server
+      setFlights(prevFlights =>
+        prevFlights.map(flight => {
+          if (flight._id === selectedFlight._id) {
+            return {
+              ...flight,
+              // Use the complete reviews array from server response
+              reviews: response.data.reviews || [...(flight.reviews || []), response.data.review],
+              rating: response.data.newRating || flight.rating
+            };
+          }
+          return flight;
+        })
+      );
+      
+      // Update selectedFlight for the modal view
+      if (modalMode === 'view') {
+        setSelectedFlight(prev => ({
+          ...prev,
+          reviews: response.data.reviews || [...(prev.reviews || []), response.data.review],
+          rating: response.data.newRating || prev.rating
+        }));
+      }
       
       closeReviewModal();
     } catch (err) {
@@ -244,31 +266,42 @@ const AdminFlights = () => {
     }
   };
 
+  // Handle delete review - FIXED
   const handleDeleteReview = async (flightId, reviewId) => {
-  try {
-    const response = await axios.delete(
-      `${API_BASE_URL}/api/flights/${flightId}/reviews/${reviewId}`,
-      { withCredentials: true }
-    );
+    try {
+      const response = await axios.delete(
+        `${API_BASE_URL}/api/flights/${flightId}/reviews/${reviewId}`,
+        { withCredentials: true }
+      );
 
-    // Update state
-    setFlights(prevFlights =>
-      prevFlights.map(flight =>
-        flight._id === flightId
-          ? {
+      // Update flights state with server response
+      setFlights(prevFlights =>
+        prevFlights.map(flight => {
+          if (flight._id === flightId) {
+            return {
               ...flight,
-              reviews: flight.reviews.filter(r => r._id.toString() !== reviewId.toString()),
-              rating: response.data.newRating
-            }
-          : flight
-      )
-    );
-  } catch (err) {
-    console.error("Error deleting review:", err);
-    setError("Failed to delete review. Please try again.");
-  }
-};
+              // Use the updated reviews array from server response
+              reviews: response.data.reviews || flight.reviews.filter(r => r._id !== reviewId),
+              rating: response.data.newRating || flight.rating
+            };
+          }
+          return flight;
+        })
+      );
 
+      // Update selectedFlight for the modal view
+      if (selectedFlight && selectedFlight._id === flightId) {
+        setSelectedFlight(prev => ({
+          ...prev,
+          reviews: response.data.reviews || prev.reviews.filter(r => r._id !== reviewId),
+          rating: response.data.newRating || prev.rating
+        }));
+      }
+    } catch (err) {
+      console.error("Error deleting review:", err);
+      setError("Failed to delete review. Please try again.");
+    }
+  };
 
 
   // Delete flight
@@ -444,7 +477,7 @@ const AdminFlights = () => {
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center gap-1">
                   <Star className="text-yellow-500 fill-current" size={16} />
-                  <span className="text-[#b94c2a] font-semibold">{flight.rating?.toFixed(1) || '0.0'}</span>
+                  <span className="text-[#b94c2a] font-semibold">{(flight.rating || 0).toFixed(1)}</span>
                 </div>
                 <div className="text-2xl font-bold text-[#b94c2a]">
                   ${flight.price}
@@ -578,7 +611,7 @@ const AdminFlights = () => {
                     <div>
                       <h4 className="text-xl font-bold text-[#b94c2a] mb-4">Reviews</h4>
                       <div className="space-y-4">
-                        {selectedFlight.reviews.map((review, index) => (
+                        {(selectedFlight.reviews || []).map((review, index) => (
                           <div key={index} className="bg-[#eec09a]/10 p-4 rounded-xl">
                             <div className="flex items-center gap-3 mb-2">
                               {review.avatar ? (

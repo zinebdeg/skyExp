@@ -16,92 +16,46 @@ import {
   Printer,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
+  Loader,
+  RefreshCw
 } from 'lucide-react';
+import axios from 'axios';
+import API_BASE_URL from '../../config/api';
 
 const AdminReservations = () => {
-  // Sample reservation data - in a real app this would come from an API
-  const [reservations, setReservations] = useState([
-    {
-      _id: '1',
-      date: new Date('2023-12-15T10:00:00'),
-      travelers: 2,
-      total: 598,
-      fullName: 'John Smith',
-      email: 'john.smith@example.com',
-      phoneNumber: '+1 (555) 123-4567',
-      pickUpLocation: 'Marrakech Hotel Plaza',
-      flight: {
-        _id: '1',
-        title: 'Romantic Sunset Flight over Atlas Mountains',
-        mainImage: 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?w=400'
-      },
-      status: 'confirmed',
-      createdAt: new Date('2023-11-20T14:30:00'),
-      updatedAt: new Date('2023-11-20T14:30:00')
-    },
-    {
-      _id: '2',
-      date: new Date('2023-12-18T14:30:00'),
-      travelers: 4,
-      total: 1196,
-      fullName: 'Emma Johnson',
-      email: 'emma.j@example.com',
-      phoneNumber: '+1 (555) 987-6543',
-      pickUpLocation: 'Riad Dar Anika',
-      flight: {
-        _id: '2',
-        title: 'VIP Desert Adventure Flight',
-        mainImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400'
-      },
-      status: 'pending',
-      createdAt: new Date('2023-11-22T09:15:00'),
-      updatedAt: new Date('2023-11-22T09:15:00')
-    },
-    {
-      _id: '3',
-      date: new Date('2023-12-20T09:00:00'),
-      travelers: 1,
-      total: 299,
-      fullName: 'Robert Davis',
-      email: 'robert.davis@example.com',
-      phoneNumber: '+1 (444) 555-6677',
-      pickUpLocation: 'La Mamounia Hotel',
-      flight: {
-        _id: '1',
-        title: 'Romantic Sunset Flight over Atlas Mountains',
-        mainImage: 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?w=400'
-      },
-      status: 'cancelled',
-      createdAt: new Date('2023-11-18T16:45:00'),
-      updatedAt: new Date('2023-11-19T11:20:00')
-    },
-    {
-      _id: '4',
-      date: new Date('2023-12-22T16:00:00'),
-      travelers: 3,
-      total: 897,
-      fullName: 'Sophia Wilson',
-      email: 'sophia.w@example.com',
-      phoneNumber: '+1 (333) 222-1111',
-      pickUpLocation: 'Royal Mansour Marrakech',
-      flight: {
-        _id: '2',
-        title: 'VIP Desert Adventure Flight',
-        mainImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400'
-      },
-      status: 'confirmed',
-      createdAt: new Date('2023-11-25T12:30:00'),
-      updatedAt: new Date('2023-11-25T12:30:00')
-    }
-  ]);
-
-  const [filteredReservations, setFilteredReservations] = useState(reservations);
+  const [reservations, setReservations] = useState([]);
+  const [filteredReservations, setFilteredReservations] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch reservations from API
+  const fetchReservations = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${API_BASE_URL}/api/reservations`,
+        { withCredentials: true }
+      );
+      setReservations(response.data);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching reservations:', err);
+      setError('Failed to load reservations. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial data fetch
+  useEffect(() => {
+    fetchReservations();
+  }, []);
 
   // Filter reservations based on search and filters
   useEffect(() => {
@@ -113,7 +67,7 @@ const AdminReservations = () => {
       result = result.filter(reservation => 
         reservation.fullName.toLowerCase().includes(term) ||
         reservation.email.toLowerCase().includes(term) ||
-        reservation.flight.title.toLowerCase().includes(term)
+        (reservation.flight && reservation.flight.title.toLowerCase().includes(term))
       );
     }
     
@@ -152,14 +106,14 @@ const AdminReservations = () => {
   // Update reservation status
   const updateReservationStatus = async (reservationId, newStatus) => {
     try {
-      // API call to update status
-      const response = await fetch(`/api/reservations/${reservationId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus })
-      });
+      setLoading(true);
+      const response = await axios.patch(
+        `${API_BASE_URL}/api/reservations/${reservationId}/status`,
+        { status: newStatus },
+        { withCredentials: true }
+      );
       
-      if (response.ok) {
+      if (response.data.success) {
         // Update local state
         setReservations(reservations.map(res => 
           res._id === reservationId ? { ...res, status: newStatus } : res
@@ -167,13 +121,30 @@ const AdminReservations = () => {
       }
     } catch (error) {
       console.error('Error updating status:', error);
+      setError('Failed to update reservation status');
+    } finally {
+      setLoading(false);
     }
   };
 
   // Delete reservation
-  const deleteReservation = (id) => {
+  const deleteReservation = async (id) => {
     if (window.confirm('Are you sure you want to delete this reservation?')) {
-      setReservations(reservations.filter(reservation => reservation._id !== id));
+      try {
+        setLoading(true);
+        await axios.delete(
+          `${API_BASE_URL}/api/reservations/${id}`,
+          { withCredentials: true }
+        );
+        
+        // Remove from local state
+        setReservations(reservations.filter(reservation => reservation._id !== id));
+      } catch (error) {
+        console.error('Error deleting reservation:', error);
+        setError('Failed to delete reservation');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -216,8 +187,32 @@ const AdminReservations = () => {
     }
   };
 
+  if (loading && reservations.length === 0) {
+    return (
+      <div className="p-8 bg-gradient-to-br from-orange-50 to-amber-50 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="animate-spin mx-auto text-[#b94c2a]" size={48} />
+          <p className="mt-4 text-[#b94c2a]">Loading reservations...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8 bg-gradient-to-br from-orange-50 to-amber-50 min-h-screen">
+      {/* Error Message */}
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+          {error}
+          <button 
+            onClick={() => setError(null)} 
+            className="ml-4 text-red-800 font-bold"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-6">
@@ -275,6 +270,16 @@ const AdminReservations = () => {
             </div>
           </div>
 
+          <div className="flex gap-2">
+            <button
+              onClick={fetchReservations}
+              className="flex items-center gap-2 bg-[#b94c2a] text-white px-4 py-3 rounded-xl hover:bg-[#a03d22] transition-colors"
+              disabled={loading}
+            >
+              {loading ? <Loader className="animate-spin" size={16} /> : <RefreshCw size={16} />}
+              Refresh
+            </button>
+          </div>
         </div>
       </div>
 
@@ -337,13 +342,15 @@ const AdminReservations = () => {
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-3">
-                      <img 
-                        src={reservation.flight.mainImage} 
-                        alt={reservation.flight.title}
-                        className="w-12 h-12 object-cover rounded-lg"
-                      />
+                      {reservation.flight && reservation.flight.mainImage && (
+                        <img 
+                          src={reservation.flight.mainImage} 
+                          alt={reservation.flight.title}
+                          className="w-12 h-12 object-cover rounded-lg"
+                        />
+                      )}
                       <div className="font-medium text-[#b94c2a] max-w-xs">
-                        {reservation.flight.title}
+                        {reservation.flight ? reservation.flight.title : 'Flight not found'}
                       </div>
                     </div>
                   </td>
@@ -377,30 +384,22 @@ const AdminReservations = () => {
                       >
                         <Eye size={16} />
                       </button>
-                      {/* <button
-                        onClick={() => updateReservationStatus(
-                          reservation._id, 
-                          reservation.status === 'confirmed' ? 'pending' : 'confirmed'
-                        )}
-                        className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
-                        title={reservation.status === 'confirmed' ? 'Mark as Pending' : 'Confirm'}
-                      >
-                        <Edit3 size={16} />
-                      </button> */}
 
                       <select
                         value={reservation.status}
                         onChange={(e) => updateReservationStatus(reservation._id, e.target.value)}
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusClass(reservation.status)}`}
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusClass(reservation.status)} border-none outline-none cursor-pointer`}
                       >
                         <option value="pending">Pending</option>
                         <option value="confirmed">Confirmed</option>
                         <option value="cancelled">Cancelled</option>
                       </select>
+                      
                       <button
                         onClick={() => deleteReservation(reservation._id)}
                         className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
                         title="Delete Reservation"
+                        disabled={loading}
                       >
                         <Trash2 size={16} />
                       </button>
@@ -413,7 +412,7 @@ const AdminReservations = () => {
         </div>
 
         {/* Empty state */}
-        {filteredReservations.length === 0 && (
+        {filteredReservations.length === 0 && !loading && (
           <div className="text-center py-16">
             <Calendar className="mx-auto text-[#b94c2a]/30 mb-4" size={64} />
             <h3 className="text-2xl font-bold text-[#b94c2a]/50 mb-2">No reservations found</h3>
@@ -423,6 +422,13 @@ const AdminReservations = () => {
                 : 'No reservations have been made yet'
               }
             </p>
+          </div>
+        )}
+
+        {loading && (
+          <div className="text-center py-16">
+            <Loader className="animate-spin mx-auto text-[#b94c2a] mb-4" size={48} />
+            <p className="text-[#b94c2a]">Loading reservations...</p>
           </div>
         )}
       </div>
@@ -507,13 +513,17 @@ const AdminReservations = () => {
               <div>
                 <h3 className="text-lg font-semibold text-[#b94c2a] mb-2">Flight Information</h3>
                 <div className="flex items-center gap-4 p-4 bg-[#eec09a]/10 rounded-xl">
-                  <img 
-                    src={selectedReservation.flight.mainImage} 
-                    alt={selectedReservation.flight.title}
-                    className="w-20 h-20 object-cover rounded-lg"
-                  />
+                  {selectedReservation.flight && selectedReservation.flight.mainImage && (
+                    <img 
+                      src={selectedReservation.flight.mainImage} 
+                      alt={selectedReservation.flight.title}
+                      className="w-20 h-20 object-cover rounded-lg"
+                    />
+                  )}
                   <div>
-                    <div className="font-semibold text-[#b94c2a]">{selectedReservation.flight.title}</div>
+                    <div className="font-semibold text-[#b94c2a]">
+                      {selectedReservation.flight ? selectedReservation.flight.title : 'Flight not found'}
+                    </div>
                     <div className="text-sm text-[#b94c2a]/70 mt-1">
                       Reservation created on {formatDate(selectedReservation.createdAt)}
                     </div>

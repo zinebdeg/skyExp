@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { 
   DollarSign, 
   Plane, 
@@ -17,123 +18,117 @@ import {
   Plus,
   BarChart3,
   Settings,
-  UserCheck
+  UserCheck,
+  CheckCircle,
+  XCircle,
+  AlertCircle
 } from 'lucide-react';
+import API_BASE_URL from '../../config/api';
 
 const Dashboard = () => {
-  const [animationClass, setAnimationClass] = useState('');
-  const [stats, setStats] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [stats, setStats] = useState({});
   const [recentReservations, setRecentReservations] = useState([]);
   const [topFlights, setTopFlights] = useState([]);
-  const [categories, setCategories] = useState({});
+  const [categoryStats, setCategoryStats] = useState({});
 
   useEffect(() => {
-    setAnimationClass('animate-fade-in');
     fetchDashboardData();
   }, []);
 
-  // Fetch data from your API endpoints
   const fetchDashboardData = async () => {
     try {
-      // In a real app, you would fetch these from your backend API
-      const reservationsResponse = await fetch('/api/reservations?limit=3&sort=-createdAt');
-      const flightsResponse = await fetch('/api/flights?limit=3&sort=-rating');
-      const statsResponse = await fetch('/api/dashboard/stats');
+      setLoading(true);
+      const response = await axios.get(`${API_BASE_URL}/api/dashboard/overview`, {withCredentials: true});
       
-      const reservationsData = await reservationsResponse.json();
-      const flightsData = await flightsResponse.json();
-      const statsData = await statsResponse.json();
       
-      setRecentReservations(reservationsData.reservations || []);
-      setTopFlights(flightsData.flights || []);
-      setStats(statsData.stats || []);
-      setCategories(statsData.categories || {});
+      const data = response.data;
+      
+      setStats(data.stats);
+      setRecentReservations(data.recentReservations);
+      setTopFlights(data.topFlights);
+      setCategoryStats(data.categoryStats);
+      setError(null);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      // Fallback to mock data if API calls fail
+      setError(error.message);
+      // Load mock data as fallback
       loadMockData();
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Mock data based on your models (fallback)
   const loadMockData = () => {
-    setStats([
-      { 
-        title: 'Total Revenue', 
-        value: '$87,450', 
-        icon: DollarSign, 
-        color: 'bg-gradient-to-br from-green-500 to-green-600', 
-        change: '+18%',
-        description: 'From 156 reservations'
-      },
-      { 
-        title: 'Active Flights', 
-        value: '42', 
-        icon: Plane, 
-        color: 'bg-gradient-to-br from-blue-500 to-blue-600', 
-        change: '+12%',
-        description: 'Across all categories'
-      },
-      { 
-        title: 'Total Reservations', 
-        value: '1,847', 
-        icon: Calendar, 
-        color: 'bg-gradient-to-br from-purple-500 to-purple-600', 
-        change: '+25%',
-        description: 'This month'
-      },
-      { 
-        title: 'Happy Travelers', 
-        value: '3,256', 
-        icon: Users, 
-        color: 'bg-gradient-to-br from-orange-500 to-orange-600', 
-        change: '+31%',
-        description: 'Total customers served'
-      }
-    ]);
+    setStats({
+      totalRevenue: 87450,
+      totalFlights: 42,
+      totalReservations: 1847,
+      totalCustomers: 3256,
+      revenueGrowth: 18,
+      flightsGrowth: 12,
+      reservationsGrowth: 25,
+      customersGrowth: 31
+    });
 
     setRecentReservations([
       {
         _id: '1',
         fullName: 'Sarah Johnson',
-        date: '2025-08-30',
+        email: 'sarah@email.com',
+        phoneNumber: '+1234567890',
+        date: new Date('2025-08-30'),
         travelers: 2,
         total: 1250,
         pickUpLocation: 'City Center',
+        status: 'confirmed',
         flight: {
           _id: 'f1',
           title: 'Romantic Sunset Flight',
-          category: 'romantic offer'
+          category: 'romantic offer',
+          price: 625,
+          rating: 4.9
         },
-        status: 'confirmed'
+        createdAt: new Date('2025-08-25')
       },
       {
         _id: '2',
         fullName: 'Michael Chen',
-        date: '2025-09-02',
+        email: 'michael@email.com',
+        phoneNumber: '+1234567891',
+        date: new Date('2025-09-02'),
         travelers: 4,
         total: 2800,
-        pickUpLocation: 'Airport',
+        pickUpLocation: 'Airport Terminal',
+        status: 'pending',
         flight: {
           _id: 'f2',
           title: 'VIP City Tour',
-          category: 'vip'
+          category: 'vip',
+          price: 700,
+          rating: 4.8
         },
-        status: 'pending'
+        createdAt: new Date('2025-08-28')
       },
       {
         _id: '3',
         fullName: 'Emma Davis',
-        date: '2025-09-05',
+        email: 'emma@email.com',
+        phoneNumber: '+1234567892',
+        date: new Date('2025-09-05'),
         travelers: 1,
         total: 950,
         pickUpLocation: 'Beach Resort',
+        status: 'confirmed',
         flight: {
           _id: 'f3',
           title: 'Adventure Explorer',
-          category: 'most reserved'
+          category: 'most reserved',
+          price: 950,
+          rating: 4.7
         },
-        status: 'confirmed'
+        createdAt: new Date('2025-08-30')
       }
     ]);
 
@@ -141,33 +136,39 @@ const Dashboard = () => {
       {
         _id: 'f1',
         title: 'Romantic Sunset Flight',
+        overview: 'Experience breathtaking views during golden hour',
         category: 'romantic offer',
         rating: 4.9,
-        price: 450,
-        reviews: Array(89).fill(), // Mock 89 reviews
+        price: 625,
+        reservationCount: 89,
+        totalRevenue: 55625
       },
       {
         _id: 'f2',
         title: 'VIP City Explorer',
+        overview: 'Luxury helicopter tour with premium service',
         category: 'vip',
         rating: 4.8,
-        price: 650,
-        reviews: Array(67).fill(), // Mock 67 reviews
+        price: 700,
+        reservationCount: 67,
+        totalRevenue: 46900
       },
       {
         _id: 'f3',
         title: 'Adventure Seeker',
+        overview: 'Thrilling flight for adventure enthusiasts',
         category: 'most reserved',
         rating: 4.7,
-        price: 350,
-        reviews: Array(156).fill(), // Mock 156 reviews
+        price: 450,
+        reservationCount: 156,
+        totalRevenue: 70200
       }
     ]);
 
-    setCategories({
-      vip: 18,
-      'romantic offer': 12,
-      'most reserved': 12
+    setCategoryStats({
+      vip: { count: 18, revenue: 126000 },
+      'romantic offer': { count: 12, revenue: 98500 },
+      'most reserved': { count: 12, revenue: 87600 }
     });
   };
 
@@ -189,15 +190,88 @@ const Dashboard = () => {
     }
   };
 
-  // Calculate revenue for a flight based on price and number of reservations
-  const calculateFlightRevenue = (flight) => {
-    if (!flight.reviews) return '$0';
-    const revenue = flight.reviews.length * flight.price;
-    return `$${revenue.toLocaleString()}`;
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'confirmed': return <CheckCircle className="w-4 h-4 text-green-600" />;
+      case 'cancelled': return <XCircle className="w-4 h-4 text-red-600" />;
+      case 'pending': return <AlertCircle className="w-4 h-4 text-yellow-600" />;
+      default: return <AlertCircle className="w-4 h-4 text-gray-600" />;
+    }
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'confirmed': return 'bg-green-100 text-green-800 border-green-200';
+      case 'cancelled': return 'bg-red-100 text-red-800 border-red-200';
+      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0
+    }).format(amount);
+  };
+
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-[#b94c2a] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[#b94c2a] font-semibold">Loading Dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const statsCards = [
+    { 
+      title: 'Total Revenue', 
+      value: formatCurrency(stats.totalRevenue || 0), 
+      icon: DollarSign, 
+      color: 'bg-gradient-to-br from-green-500 to-green-600', 
+      change: `+${stats.revenueGrowth || 0}%`,
+      description: `From ${stats.totalReservations || 0} reservations`
+    },
+    { 
+      title: 'Active Flights', 
+      value: stats.totalFlights || 0, 
+      icon: Plane, 
+      color: 'bg-gradient-to-br from-blue-500 to-blue-600', 
+      change: `+${stats.flightsGrowth || 0}%`,
+      description: 'Across all categories'
+    },
+    { 
+      title: 'Total Reservations', 
+      value: stats.totalReservations?.toLocaleString() || '0', 
+      icon: Calendar, 
+      color: 'bg-gradient-to-br from-purple-500 to-purple-600', 
+      change: `+${stats.reservationsGrowth || 0}%`,
+      description: 'This month'
+    },
+    { 
+      title: 'Happy Travelers', 
+      value: stats.totalCustomers?.toLocaleString() || '0', 
+      icon: Users, 
+      color: 'bg-gradient-to-br from-orange-500 to-orange-600', 
+      change: `+${stats.customersGrowth || 0}%`,
+      description: 'Total customers served'
+    }
+  ];
+
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 p-6 ${animationClass}`}>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 p-6">
       <div className="space-y-8">
         
         {/* Header */}
@@ -208,9 +282,17 @@ const Dashboard = () => {
           <p className="text-[#b94c2a]/70 text-lg">Manage your flight booking business with ease</p>
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4">
+            <p className="font-semibold">Error loading dashboard data</p>
+            <p className="text-sm">{error} - Showing sample data</p>
+          </div>
+        )}
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {stats.map((stat, index) => (
+          {statsCards.map((stat, index) => (
             <div key={index} className="group bg-white/80 backdrop-blur-lg rounded-3xl p-6 shadow-xl border border-white/50 hover:transform hover:scale-105 hover:shadow-2xl transition-all duration-500 hover:bg-white">
               <div className="flex items-start justify-between mb-4">
                 <div className={`w-16 h-16 ${stat.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
@@ -243,46 +325,60 @@ const Dashboard = () => {
               </button>
             </div>
             <div className="space-y-4">
-              {recentReservations.map((reservation) => (
+              {recentReservations.length > 0 ? recentReservations.map((reservation) => (
                 <div key={reservation._id} className="bg-gradient-to-r from-white to-[#eec09a]/5 border border-[#eec09a]/30 rounded-2xl p-5 hover:shadow-lg transition-all duration-300 hover:border-[#eec09a]/50">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-[#b94c2a] to-[#d4934a] rounded-full flex items-center justify-center text-white font-bold">
-                        {reservation.fullName.split(' ').map(n => n[0]).join('')}
+                      <div className="w-12 h-12 bg-gradient-to-br from-[#b94c2a] to-[#d4934a] rounded-full flex items-center justify-center text-white font-bold">
+                        {reservation.fullName?.split(' ').map(n => n[0]).join('') || 'N/A'}
                       </div>
                       <div>
-                        <h4 className="font-semibold text-[#b94c2a]">{reservation.fullName}</h4>
-                        <p className="text-sm text-[#b94c2a]/60">{reservation.flight?.title}</p>
+                        <h4 className="font-semibold text-[#b94c2a]">{reservation.fullName || 'Unknown Customer'}</h4>
+                        <p className="text-sm text-[#b94c2a]/60">{reservation.flight?.title || 'No Flight Info'}</p>
+                        <div className="flex items-center gap-2 text-xs text-[#b94c2a]/50 mt-1">
+                          <Mail className="w-3 h-3" />
+                          {reservation.email || 'No email'}
+                        </div>
                       </div>
                     </div>
-                    <div className={`px-3 py-1 rounded-full text-xs font-medium border ${getCategoryColor(reservation.flight?.category)}`}>
-                      <div className="flex items-center gap-1">
-                        {getCategoryIcon(reservation.flight?.category)}
-                        {reservation.flight?.category}
-                      </div>
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1 ${getStatusColor(reservation.status || 'pending')}`}>
+                      {getStatusIcon(reservation.status || 'pending')}
+                      {reservation.status || 'pending'}
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-3">
                     <div className="flex items-center gap-1 text-[#b94c2a]/70">
                       <Clock className="w-4 h-4" />
-                      {new Date(reservation.date).toLocaleDateString()}
+                      {reservation.date ? formatDate(reservation.date) : 'No date'}
                     </div>
                     <div className="flex items-center gap-1 text-[#b94c2a]/70">
                       <Users className="w-4 h-4" />
-                      {reservation.travelers} travelers
+                      {reservation.travelers || 0} travelers
                     </div>
                     <div className="flex items-center gap-1 text-[#b94c2a]/70">
                       <DollarSign className="w-4 h-4" />
-                      ${reservation.total}
+                      {formatCurrency(reservation.total || 0)}
                     </div>
-                    <div className={`px-2 py-1 rounded-lg text-xs font-medium ${
-                      reservation.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {reservation.status}
+                    <div className="flex items-center gap-1 text-[#b94c2a]/70">
+                      <MapPin className="w-4 h-4" />
+                      {reservation.pickUpLocation || 'No location'}
                     </div>
                   </div>
+
+                  {reservation.flight?.category && (
+                    <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${getCategoryColor(reservation.flight.category)}`}>
+                      {getCategoryIcon(reservation.flight.category)}
+                      {reservation.flight.category}
+                    </div>
+                  )}
                 </div>
-              ))}
+              )) : (
+                <div className="text-center py-8 text-[#b94c2a]/50">
+                  <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>No recent reservations found</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -293,125 +389,103 @@ const Dashboard = () => {
               Top Flights
             </h3>
             <div className="space-y-4">
-              {topFlights.map((flight) => (
+              {topFlights.length > 0 ? topFlights.map((flight) => (
                 <div key={flight._id} className="bg-gradient-to-r from-[#eec09a]/10 to-white border border-[#eec09a]/30 rounded-2xl p-4 hover:shadow-lg transition-all duration-300">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-semibold text-[#b94c2a] text-sm">{flight.title}</h4>
-                    <div className="flex items-center gap-1 text-yellow-500">
-                      <Star className="w-4 h-4 fill-current" />
-                      <span className="text-xs font-medium text-[#b94c2a]">{flight.rating}</span>
+                    <h4 className="font-semibold text-[#b94c2a] text-sm">{flight.title || 'Untitled Flight'}</h4>
+                    {flight.rating && (
+                      <div className="flex items-center gap-1 text-yellow-500">
+                        <Star className="w-4 h-4 fill-current" />
+                        <span className="text-xs font-medium text-[#b94c2a]">{flight.rating}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {flight.overview && (
+                    <p className="text-xs text-[#b94c2a]/60 mb-3 line-clamp-2">{flight.overview}</p>
+                  )}
+                  
+                  {flight.category && (
+                    <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border mb-3 ${getCategoryColor(flight.category)}`}>
+                      {getCategoryIcon(flight.category)}
+                      {flight.category}
+                    </div>
+                  )}
+                  
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between items-center text-[#b94c2a]/70">
+                      <span>Reservations:</span>
+                      <span className="font-semibold">{flight.reservationCount || 0}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-[#b94c2a]/70">
+                      <span>Revenue:</span>
+                      <span className="font-semibold text-green-600">{formatCurrency(flight.totalRevenue || 0)}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-[#b94c2a]/70">
+                      <span>Price:</span>
+                      <span className="font-semibold">{formatCurrency(flight.price || 0)}</span>
                     </div>
                   </div>
-                  <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border mb-3 ${getCategoryColor(flight.category)}`}>
-                    {getCategoryIcon(flight.category)}
-                    {flight.category}
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-xs text-[#b94c2a]/70">
-                    <div>{flight.reviews?.length || 0} bookings</div>
-                    <div className="font-semibold text-green-600">{calculateFlightRevenue(flight)}</div>
-                  </div>
                 </div>
-              ))}
+              )) : (
+                <div className="text-center py-8 text-[#b94c2a]/50">
+                  <Plane className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>No top flights found</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Quick Actions & Analytics */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          {/* Quick Actions */}
-          <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl border border-white/50">
-            <h3 className="text-2xl font-bold text-[#b94c2a] mb-6 flex items-center gap-2">
-              <Activity className="w-6 h-6" />
-              Quick Actions
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { action: 'Add Flight', icon: Plus, color: 'from-blue-500 to-blue-600' },
-                { action: 'View Reports', icon: BarChart3, color: 'from-green-500 to-green-600' },
-                { action: 'Manage Users', icon: UserCheck, color: 'from-purple-500 to-purple-600' },
-                { action: 'Settings', icon: Settings, color: 'from-orange-500 to-orange-600' }
-              ].map((item, index) => (
-                <button key={index} className={`group bg-gradient-to-br ${item.color} hover:shadow-xl text-white font-semibold py-6 px-4 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1`}>
-                  <item.icon className="w-6 h-6 mx-auto mb-2 group-hover:scale-110 transition-transform duration-200" />
-                  <div className="text-sm">{item.action}</div>
-                </button>
-              ))}
-            </div>
-          </div>
+        {/* Quick Actions & System Overview */}
+        <div className="grid">
 
-          {/* System Overview */}
+          {/* Category Statistics */}
           <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl border border-white/50">
             <h3 className="text-2xl font-bold text-[#b94c2a] mb-6 flex items-center gap-2">
               <BarChart3 className="w-6 h-6" />
-              System Overview
+              Category Performance
             </h3>
             <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <span className="text-[#b94c2a]/70">Flight Categories</span>
-                <div className="flex gap-2">
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-pink-500 rounded-full"></div>
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              {Object.keys(categoryStats).length > 0 ? Object.entries(categoryStats).map(([category, data]) => {
+                const totalFlights = Object.values(categoryStats).reduce((sum, cat) => sum + (cat.count || 0), 0);
+                const totalRevenue = Object.values(categoryStats).reduce((sum, cat) => sum + (cat.revenue || 0), 0);
+                const percentage = totalFlights > 0 ? ((data.count || 0) / totalFlights) * 100 : 0;
+                
+                return (
+                  <div key={category} className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        {getCategoryIcon(category)}
+                        <span className="text-sm text-[#b94c2a]/70 capitalize">{category}</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-semibold text-[#b94c2a] text-sm">{data.count || 0} flights</div>
+                        <div className="text-xs text-green-600 font-semibold">{formatCurrency(data.revenue || 0)}</div>
+                      </div>
+                    </div>
+                    <div className="w-full bg-[#eec09a]/20 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full transition-all duration-500 ${
+                          category === 'vip' ? 'bg-gradient-to-r from-yellow-400 to-yellow-500' :
+                          category === 'romantic offer' ? 'bg-gradient-to-r from-pink-400 to-pink-500' :
+                          'bg-gradient-to-r from-green-400 to-green-500'
+                        }`}
+                        style={{ width: `${percentage}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              }) : (
+                <div className="text-center py-8 text-[#b94c2a]/50">
+                  <BarChart3 className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>No category statistics available</p>
                 </div>
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-[#b94c2a]/70">VIP Flights</span>
-                  <span className="font-semibold text-[#b94c2a]">{categories.vip || 0}</span>
-                </div>
-                <div className="w-full bg-[#eec09a]/20 rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-2 rounded-full" 
-                    style={{ width: `${((categories.vip || 0) / Object.values(categories).reduce((a, b) => a + b, 1)) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-[#b94c2a]/70">Romantic Offers</span>
-                  <span className="font-semibold text-[#b94c2a]">{categories['romantic offer'] || 0}</span>
-                </div>
-                <div className="w-full bg-[#eec09a]/20 rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-pink-400 to-pink-500 h-2 rounded-full" 
-                    style={{ width: `${((categories['romantic offer'] || 0) / Object.values(categories).reduce((a, b) => a + b, 1)) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-[#b94c2a]/70">Most Reserved</span>
-                  <span className="font-semibold text-[#b94c2a]">{categories['most reserved'] || 0}</span>
-                </div>
-                <div className="w-full bg-[#eec09a]/20 rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-green-400 to-green-500 h-2 rounded-full" 
-                    style={{ width: `${((categories['most reserved'] || 0) / Object.values(categories).reduce((a, b) => a + b, 1)) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        .animate-fade-in {
-          animation: fadeIn 0.8s ease-out;
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 };

@@ -50,19 +50,6 @@ const AdminFlights = () => {
     comment: ''
   });
 
-  // Get auth token
-  const getAuthToken = () => {
-    return localStorage.getItem('adminToken');
-  };
-
-  // Configure axios defaults
-  useEffect(() => {
-    const token = getAuthToken();
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    }
-  }, []);
-
   // Fetch flights from API
   const fetchFlights = async () => {
     try {

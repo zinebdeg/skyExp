@@ -30,11 +30,7 @@ const Login = () => {
       const response = await axios.post(`${API_BASE_URL}/api/auth/login`, formData, {withCredentials: true});
       
       if (response.data.success) {
-        // Store token in localStorage if needed
-        if (response.data.token) {
-          localStorage.setItem('adminToken', response.data.token);
-        }
-        
+
         // Redirect to admin dashboard
         window.location.href = '/admin';
       } else {

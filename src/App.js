@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Cookies from "js-cookie";
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import HomePage from './pages/home/Home';
@@ -22,11 +23,13 @@ import DetailsFlight from './pages/DetailsFlight/DetailsFlight';
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
-  const token = localStorage.getItem('adminToken');
+  const token = Cookies.get("jwt");
+
+  console.log(token)
 
   useEffect(() => {
     if (!token) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [token, navigate]);
 

@@ -11,6 +11,8 @@ import {
   LogOutIcon
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Cookies from "js-cookie";
+
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -19,8 +21,7 @@ const Layout = () => {
   const currentPath = location.pathname;
 
   const handleLogout = () => {
-    localStorage.removeItem('adminToken');
-    // Also call your backend logout endpoint if you have one
+    Cookies.remove("jwt", { path: "/" });
     window.location.href = '/login';
   };
 

@@ -1,8 +1,18 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
-export default function AnimatedCard() {
+export default function AnimatedCard({ title, image, price, rating, category, id }) {
   const [isHovered, setIsHovered] = useState(false);
+
+  // Function to get category badge text
+  const getCategoryBadge = (category) => {
+    switch(category) {
+      case 'vip': return 'VIP';
+      case 'romantic offer': return 'Romantic';
+      case 'most reserved': return 'Most Reserved';
+      default: return category;
+    }
+  };
 
   return (
       <motion.div
@@ -26,8 +36,8 @@ export default function AnimatedCard() {
           transition={{ duration: 0.4, ease: "easeInOut" }}
         >
           <motion.img
-            src="/images/classic.png"
-            alt="Classic Hot-Air Balloon"
+            src={image}
+            alt={title}
             className="w-full object-cover"
             animate={{
               height: isHovered ? '240px' : '280px'
@@ -45,7 +55,7 @@ export default function AnimatedCard() {
             }}
             transition={{ duration: 0.3 }}
           >
-            <div className="text-lg font-bold">$200</div>
+            <div className="text-lg font-bold">${price}</div>
             <div className="text-xs">/Adult</div>
           </motion.div>
 
@@ -58,7 +68,7 @@ export default function AnimatedCard() {
             }}
             transition={{ duration: 0.3, delay: isHovered ? 0.2 : 0 }}
           >
-            Most reserved
+            {getCategoryBadge(category)}
           </motion.span>
           
           {/* Overlay content for non-hovered state */}
@@ -72,12 +82,11 @@ export default function AnimatedCard() {
           >
             <div className="text-white">
               <div className="font-bold text-lg mb-1">
-                CLASSIC{' '}
-                <span className="font-normal text-sm">Hot-Air Balloon Flight in Marrakech</span>
+                {title}
               </div>
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-yellow-400 text-lg">★</span>
-                <span className="text-sm font-bold">4.9/5</span>
+                <span className="text-sm font-bold">{rating}/5</span>
                 <motion.button
                   className="ml-auto bg-red-500 text-white px-3 py-1 rounded-full font-bold text-xs hover:bg-red-600 transition-colors"
                   whileHover={{ scale: 1.05 }}
@@ -109,17 +118,14 @@ export default function AnimatedCard() {
           >
             <div>
               <div className="font-bold text-lg text-black mb-1">
-                CLASSIC{' '}
-                <span className="font-normal">Hot-Air Balloon Flight in Marrakech</span>
+                {title}
               </div>
             </div>
             <div className="flex items-center gap-2 mt-2">
               <span className="text-yellow-400 text-lg">★</span>
-              <span className="text-sm font-bold">4.9/5</span>
+              <span className="text-sm font-bold">{rating}/5</span>
               <motion.a
-                href="/classic-flight"
-                target="_blank"
-                rel="noopener noreferrer"
+                href={`/flights/${id}`}
                 className="ml-auto bg-[#d35400] text-white px-4 py-1 rounded-full font-bold text-xs hover:bg-[#b8441f] transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

@@ -17,6 +17,7 @@ import Dashboard from './admin/Dashboard/Dashboard';
 import AdminFlights from './admin/Flights/Flights';
 import AdminReservations from './admin/Reservations/Reservations';
 import Login from './auth/Login/Login';
+import DetailsFlight from './pages/DetailsFlight/DetailsFlight';
 
 
 const ProtectedRoute = ({ children }) => {
@@ -56,6 +57,7 @@ function App() {
           <Route path="/classic-flight" element={<ClassicFlightPage />} />
           <Route path="/anniversaire-flight" element={<AnniversaireDetails />} />
           <Route path="/mariage-flight" element={<MariageDetails />} />
+          <Route path="/flights/:id" element={<DetailsFlight />} />
         </Route>
 
         {/* Admin Routes */}

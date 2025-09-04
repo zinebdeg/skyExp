@@ -1,52 +1,126 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import "./Header.css"
 
 export default function Header() {
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
-  const [dropdownOpen, setDropdownOpen] = React.useState(false);
-  const handleDropdownEnter = () => setDropdownOpen(true);
-  const handleDropdownLeave = () => setDropdownOpen(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
+
   return (
-    <header className="bg-white/5 backdrop-blur-sm shadow-sm w-full HeaderComponentClass p-8 bg-[#ded1c7]"> 
-        <div className="container mx-auto px-8 py-2 flex flex-col md:flex-row justify-between items-center bg-white rounded-full">
-          {/* Logo */}
-          <div className="mb-4 md:mb-0">
-            <img  
-              src="/images/logo.png" 
-              alt="SKY EXPERIENCE Logo"
-              className="h-12 md:h-16 w-auto"
-            />
-          </div>
-          {/* Menu */}
-        
-  
+    <header className="w-full bg-[#ded1c7] py-4"> 
+      <div className="container mx-auto px-4 flex justify-between items-center">
+        {/* Logo */}
+        <div className="flex items-center">
+          <img  
+            src="/images/logo.png" 
+            alt="SKY EXPERIENCE Logo"
+            className="h-10 md:h-12 w-auto"
+          />
+        </div>
 
-          <nav className="flex flex-wrap justify-center gap-4 md:gap-8 items-center">
-              <Link to="/" className={`font-bold hover:text-orange-500 transition-colors${isActive("/") ? " text-orange-500 underline" : ""}`}>HOME</Link>
-              <Link to="/about" className={`font-bold hover:text-orange-500 transition-colors${isActive("/about") ? " text-orange-500 underline" : ""}`}>About us</Link>
-              <div className="relative" onMouseEnter={handleDropdownEnter} >
-                <button className={`font-bold hover:text-orange-500 transition-colors flex items-center gap-1 ${["/private-flight","/royal-flight","/classic-flight","/anniversaire-flight","/mariage-flight"].includes(location.pathname) ? "text-orange-500 underline" : ""}`}
-                  type="button">
-                  Flight
-                  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
-                </button>
-                <div  onMouseLeave={handleDropdownLeave} className={`absolute left-0 mt-2 w-48 z-50 bg-white rounded-xl shadow-lg border border-gray-200 transition-opacity ${dropdownOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}>
-                  <Link to="/private-flight" className="block px-6 py-3 hover:bg-orange-50 text-gray-900 font-medium">Private Flight</Link>
-                  <Link to="/royal-flight" className="block px-6 py-3 hover:bg-orange-50 text-gray-900 font-medium">Royal Flight</Link>
-                  <Link to="/classic-flight" className="block px-6 py-3 hover:bg-orange-50 text-gray-900 font-medium">Classic Flight</Link>
-                  <Link to="/anniversaire-flight" className="block px-6 py-3 hover:bg-orange-50 text-gray-900 font-medium">Anniversaire Flight</Link>
-                  <Link to="/mariage-flight" className="block px-6 py-3 hover:bg-orange-50 text-gray-900 font-medium">Mariage Flight</Link>
-                </div>
-              </div>
-              <Link to="/contact" className={`font-bold hover:text-orange-500 transition-colors${isActive("/contact") ? " text-orange-500 underline" : ""}`}>Contact</Link>
-          </nav>
+        {/* Desktop Navigation Menu */}
+        <nav className="hidden md:flex items-center gap-8">
+          <Link 
+            to="/" 
+            className={`font-bold text-sm uppercase tracking-wider hover:text-orange-500 transition-colors ${isActive("/") ? "text-orange-500" : "text-gray-800"}`}
+          >
+            HOME
+          </Link>
+          <Link 
+            to="/about" 
+            className={`font-bold text-sm uppercase tracking-wider hover:text-orange-500 transition-colors ${isActive("/about") ? "text-orange-500" : "text-gray-800"}`}
+          >
+            About us
+          </Link>
+          <Link 
+            to="/booking" 
+            className={`font-bold text-sm uppercase tracking-wider hover:text-orange-500 transition-colors ${isActive("/booking") ? "text-orange-500" : "text-gray-800"}`}
+          >
+            Flight
+          </Link>
+          <Link 
+            to="/contact" 
+            className={`font-bold text-sm uppercase tracking-wider hover:text-orange-500 transition-colors ${isActive("/contact") ? "text-orange-500" : "text-gray-800"}`}
+          >
+            Contact
+          </Link>
+        </nav>
 
-           <Link to="/booking" className="bg-[#a43518] hover:scale-110 transition-all duration-300 text-white px-6 py-2 rounded-full font-bold  hover:bg-orange-600 transition">
-              BOOK NOW
+        {/* Desktop BOOK NOW Button */}
+        <Link 
+          to="/booking" 
+          className="hidden md:block bg-[#a43518] hover:scale-110 transition-all duration-300 text-white px-6 py-2 rounded-full font-bold text-sm uppercase tracking-wider hover:bg-orange-600"
+        >
+          BOOK NOW
+        </Link>
+
+        {/* Mobile Menu Button */}
+        <div className="md:hidden flex items-center gap-4">
+          <button 
+            className="text-gray-800 p-2"
+            onClick={toggleMobileMenu}
+            aria-label="Toggle menu"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth="2" 
+                d={mobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} 
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <div className={`md:hidden bg-white mt-2 mx-4 rounded-lg shadow-lg transition-all duration-300 ease-in-out ${mobileMenuOpen ? 'block opacity-100' : 'hidden opacity-0'}`}>
+        <div className="flex flex-col gap-0 p-4">
+          <Link 
+            to="/" 
+            className={`font-bold py-3 px-4 rounded-lg hover:bg-orange-50 transition-colors ${isActive("/") ? "text-orange-500 bg-orange-50" : "text-gray-800"}`}
+            onClick={closeMobileMenu}
+          >
+            HOME
+          </Link>
+          <Link 
+            to="/about" 
+            className={`font-bold py-3 px-4 rounded-lg hover:bg-orange-50 transition-colors ${isActive("/about") ? "text-orange-500 bg-orange-50" : "text-gray-800"}`}
+            onClick={closeMobileMenu}
+          >
+            About us
+          </Link>
+          <Link 
+            to="/booking" 
+            className={`font-bold py-3 px-4 rounded-lg hover:bg-orange-50 transition-colors ${isActive("/booking") ? "text-orange-500 bg-orange-50" : "text-gray-800"}`}
+            onClick={closeMobileMenu}
+          >
+            Flight
+          </Link>
+          <Link 
+            to="/contact" 
+            className={`font-bold py-3 px-4 rounded-lg hover:bg-orange-50 transition-colors ${isActive("/contact") ? "text-orange-500 bg-orange-50" : "text-gray-800"}`}
+            onClick={closeMobileMenu}
+          >
+            Contact
+          </Link>
+          <Link 
+            to="/booking" 
+            className="bg-[#a43518] text-white px-4 py-3 rounded-full font-bold text-center mt-2 hover:bg-orange-600 transition-colors"
+            onClick={closeMobileMenu}
+          >
+            BOOK NOW
           </Link>
         </div>
-      </header>
+      </div>
+    </header>
   );
 }

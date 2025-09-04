@@ -38,21 +38,28 @@ export default function HomePage() {
   }
   return (
           <div className="min-h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('/images/landing.png')" }}>
-      {/* Hero Section */}
-            <main className=" flex items-center justify-center h-[calc(100vh-144px)] w-full">
-              <div className="  flex flex-col items-center justify-center w-full h-full text-center">
-          <div className="content flex flex-col items-center justify-center gap-80">
+            {/* Hero Section */}
+            <main className="flex items-center justify-center h-[calc(100vh-72px)] w-full">
+              <div className="flex flex-col justify-between items-center w-full h-full text-center py-12">
+                
+                {/* Heading in center */}
+                <div className="flex-1 flex items-center justify-center">
+                  <h1 className="text-3xl md:text-5xl font-bold text-black drop-shadow-xl">
+                    Soar Above Marrakech in Hot Air Balloon
+                  </h1>
+                </div>
 
-     <h1 className="text-3xl md:text-5xl font-bold text-black mb-8 drop-shadow-xl">
-                  Soar Above Marrakech in Hot air Balloon
-          </h1>
-                <Link to="/booking" className="bg-[#a43518] hover:bg-orange-600 hover:scale-110 transition-all duration-300 text-white px-8 py-4 rounded-md font-bold text-lg uppercase tracking-wider shadow-lg">
-            BOOK YOUR FLIGHT NOW
+                {/* Button at bottom */}
+                <Link
+                  to="/booking"
+                  className="bg-[#a43518] hover:bg-orange-600 hover:scale-110 transition-all duration-300 text-white px-8 py-4 rounded-md font-bold text-lg uppercase tracking-wider shadow-lg"
+                >
+                  BOOK YOUR FLIGHT NOW
                 </Link>
-          </div>
-           
-        </div>
-      </main>
+              </div>
+            </main>
+
+
                   {/* Our Flights Section - Dynamic */}
       <section id="flight" className="w-full bg-[#ded1c7] py-12">
         <div className="max-w-5xl mx-auto rounded-2xl p-8 md:p-12 flex flex-col gap-12">

@@ -132,7 +132,7 @@ const Contact = () => {
               <label className="block mb-1 font-semibold text-[#a43518]">Phone</label>
               <div className="flex items-center">
                 <span className="inline-block mr-2">
-                  <img src="/images/flag-morocco.png" alt="Morocco" className="inline w-6 h-6 rounded shadow" />
+                  🇲🇦                
                 </span>
                 <input
                   {...register("phone")}

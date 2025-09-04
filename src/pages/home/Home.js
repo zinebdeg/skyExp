@@ -1,8 +1,41 @@
 import { Link } from "react-router-dom";
-import { flights } from "./data";
+import { useState, useEffect } from "react";
 import FlightCard from "../../components/flightCard/FlightCard";
 import PanoramicSection from "../../components/section";
+import axios from "axios";
+import API_BASE_URL from "../../config/api";
+import { Phone } from "lucide-react";
+
 export default function HomePage() {
+    const [flights, setFlights] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHomepageFlights = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/flights/homepage`);
+        setFlights(response.data);
+      } catch (error) {
+        console.error("Error fetching homepage flights:", error);
+        // Fallback to empty array if API fails
+        setFlights([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHomepageFlights();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('/images/landing.png')" }}>
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-white text-xl">Loading flights...</div>
+        </div>
+      </div>
+    );
+  }
   return (
           <div className="min-h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('/images/landing.png')" }}>
       {/* Hero Section */}
@@ -13,42 +46,55 @@ export default function HomePage() {
      <h1 className="text-3xl md:text-5xl font-bold text-black mb-8 drop-shadow-xl">
                   Soar Above Marrakech in Hot air Balloon
           </h1>
-                <Link to="/booking" className="bg-[#a43518] hover:bg-orange-600 hover:scale-110 transition-all duration-300 text-white px-8 py-4 rounded-md font-bold text-lg uppercase tracking-wider transition-colors shadow-lg">
+                <Link to="/booking" className="bg-[#a43518] hover:bg-orange-600 hover:scale-110 transition-all duration-300 text-white px-8 py-4 rounded-md font-bold text-lg uppercase tracking-wider shadow-lg">
             BOOK YOUR FLIGHT NOW
                 </Link>
           </div>
            
         </div>
       </main>
-            {/* Our Flights Section - Version maquette */}
-            <section id="flight" className="w-full bg-[#ded1c7] py-12 ">
-              <div className="max-w-5xl mx-auto rounded-2xl  p-8 md:p-12 flex flex-col gap-12  " >
-                <h2 className="text-6xl font-extrabold text-center mb-6 text-[#2c2c2c]">Our Flights</h2>
-                <div className="flex flex-wrap justify-center gap-4 mb-8">
-                  <a href="#private-flight" className="bg-white rounded-full px-6 py-2 font-bold text-[#a43518] shadow hover:bg-orange-50 transition">Private Flight</a>
-                  <a href="#royal-flight" className="bg-white rounded-full px-6 py-2 font-bold text-[#a43518] shadow hover:bg-orange-50 transition">Royal Flight</a>
-                  <a href="#classic-flight" className="bg-white rounded-full px-6 py-2 font-bold text-[#a43518] shadow hover:bg-orange-50 transition">Classic Flight</a>
-                  <a href="#anniversaire-flight" className="bg-white rounded-full px-6 py-2 font-bold text-[#a43518] shadow hover:bg-orange-50 transition">Anniversaire Flight</a>
-                  <a href="#mariage-flight" className="bg-white rounded-full px-6 py-2 font-bold text-[#a43518] shadow hover:bg-orange-50 transition">Mariage Flight</a>
-                </div>
-                {flights.map((flight, index) => {
-                  // Map flight title to anchor id and route
-                  const anchorMap = {
-                    'Private Flight': { id: 'private-flight', route: '/private-flight' },
-                    'Royal Flight': { id: 'royal-flight', route: '/royal-flight' },
-                    'Classic Flight': { id: 'classic-flight', route: '/classic-flight' },
-                    'Anniversaire Flight': { id: 'anniversaire-flight', route: '/anniversaire-flight' },
-                    'Mariage Flight': { id: 'mariage-flight', route: '/mariage-flight' },
-                  };
-                  const anchor = anchorMap[flight.title] || { id: '', route: '/' };
-                  return (
-                    <div id={anchor.id} key={index}>
-                      <FlightCard {...flight} imageLink={anchor.route} />
-                    </div>
-                  );
-                })}
+                  {/* Our Flights Section - Dynamic */}
+      <section id="flight" className="w-full bg-[#ded1c7] py-12">
+        <div className="max-w-5xl mx-auto rounded-2xl p-8 md:p-12 flex flex-col gap-12">
+          <h2 className="text-6xl font-extrabold text-center mb-6 text-[#2c2c2c]">Our Flights</h2>
+          
+          {/* Navigation buttons - dynamically generated from available flights */}
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
+            {flights.map((flight) => (
+              <a 
+                key={flight._id}
+                href={`#${flight.title.toLowerCase().replace(/\s+/g, '-')}`}
+                className="bg-white rounded-full px-6 py-2 font-bold text-[#a43518] shadow hover:bg-orange-50 transition"
+              >
+                {flight.title}
+              </a>
+            ))}
+          </div>
+
+          {/* Flight cards */}
+          {flights.map((flight) => {
+            // Generate anchor ID from title
+            const anchorId = flight.title.toLowerCase().replace(/\s+/g, '-');
+            // Generate route from title
+            const route = `/flights/${flight._id}`;
+            
+            return (
+              <div id={anchorId} key={flight._id}>
+                <FlightCard 
+                  title={flight.title}
+                  overview={flight.overview}
+                  mainImage={flight.mainImage}
+                  price={flight.price}
+                  rating={flight.rating}
+                  category={flight.category}
+                  program={flight.program}
+                  imageLink={route}
+                />
               </div>
-            </section>
+            );
+          })}
+        </div>
+      </section>
 
             {/* Section Trusted by */}
             <section className="w-full bg-[#faf9e6] py-12">
@@ -120,7 +166,7 @@ export default function HomePage() {
                     <div className="text-sm text-gray-700 mb-2">
                       J'ai vécu une expérience inoubliable en montgolfière pour admirer le lever de soleil, et c'était tout simplement magique ! Voler au-dessus des paysages à couper le souffle dans une atmosphère paisible était une sensation incroyable. Khalid a été un hôte exceptionnel, très professionnel et attentionné, ce qui a rendu cette aventure encore plus mémorable. Je recommande vivement cette activité à tous ceux qui cherchent un moment unique et inoubliable. Merci infiniment, Khalid, pour cette expérience extraordinaire ! 🎈🌅✨
                     </div>
-                    <button className="text-[#5a2323] font-bold underline self-end text-sm">View more ▼</button>
+                    {/* <button className="text-[#5a2323] font-bold underline self-end text-sm">View more ▼</button> */}
                   </div>
                 </div>
               </div>
@@ -141,13 +187,15 @@ export default function HomePage() {
                     A hot-air balloon ride is much more than a simple journey. Sky Experience turns this aerial adventure into an unforgettable moment. Watch the sun rise over the Atlas Mountains, lush oases, and expansive palm groves surrounding the city. A truly unique view awaits, offering you a bird's-eye view of Marrakech's natural beauty.
                   </div>
                   <div className="flex items-center gap-4 mt-2">
-                    <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-bold transition-colors">Check details</button>
+                    <a href="/about" className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-bold transition-colors">Check details</a>
                     {/* Icône téléphone SVG */}
-                    <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-orange-100">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#f97316" className="w-7 h-7">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h0a2.25 2.25 0 002.25-2.25v-2.1a1.35 1.35 0 00-1.012-1.31l-3.2-.8a1.35 1.35 0 00-1.638.65l-.7 1.4a11.25 11.25 0 01-5.1-5.1l1.4-.7a1.35 1.35 0 00.65-1.638l-.8-3.2A1.35 1.35 0 007.6 4.5h-2.1A2.25 2.25 0 003.25 6.75v0z" />
-                      </svg>
-                    </span>
+                    <div className="flex items-center gap-3">
+                      <a href="tel:+212661445327" className="text-gray-800 font-medium hover:text-orange-500 transition">
+                      <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-orange-100">
+                        <Phone className="w-7 h-7 text-orange-500" />
+                      </span>
+                      </a>
+                    </div>
             </div>
           </div>
         </div>

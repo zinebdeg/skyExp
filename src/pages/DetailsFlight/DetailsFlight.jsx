@@ -4,10 +4,12 @@ import "../../App.css";
 import AnimatedCard from "../../components/flightCard";
 import axios from "axios";
 import API_BASE_URL from "../../config/api";
+import { StarIcon } from "lucide-react";
 
 const DetailsFlight = () => {
   const { id } = useParams();
   const [flight, setFlight] = useState(null);
+  const [suggestedFlights, setSuggestedFlights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [mainImg, setMainImg] = useState('');
@@ -17,8 +19,9 @@ const DetailsFlight = () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/flights/${id}`);
         const data = await response.data;
-        setFlight(data);
-        setMainImg(data.mainImage);
+        setFlight(data.flight);
+        setSuggestedFlights(data.suggestedFlights)
+        setMainImg(data.flight.mainImage);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -205,30 +208,42 @@ const DetailsFlight = () => {
         </div>
         
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-yellow-400 text-xl">
-            {Array(Math.round(flight.rating)).fill(0).map((_, i) => (
-              <span key={i}>★</span>
+          <span className="flex gap-1 text-xl">
+            {Array.from({ length: 5 }, (_, i) => (
+              <StarIcon
+                key={i}
+        className={i < Math.round(flight.rating) ? "text-yellow-500 fill-yellow-500" : "text-gray-400 fill-gray-400"}
+              />
             ))}
           </span>
-          <span className="text-black/80">({flight.reviews.length} reviews)</span>
+          <span className="text-black/80">({flight.totalReviews} reviews)</span>
         </div>
       </div>
       
       {/* FLIGHT suggestion section */}
       <div className="w-full max-w-6xl mx-auto mb-0 px-4">
-        <h2 className="text-2xl md:text-3xl font-extrabold text-center mb-8">FLIGHT suggestion</h2>
-        
-        <div className="flex flex-col md:flex-row gap-8 justify-center items-stretch mb-16">
-          <AnimatedCard 
-            title={flight.title}
-            image={flight.mainImage}
-            price={flight.price}
-            rating={flight.rating}
-            category={flight.category}
-            id={flight._id}
-          />
+        <h2 className="text-2xl md:text-3xl font-extrabold text-center mb-8">
+          FLIGHT suggestion
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 justify-items-center">
+          {suggestedFlights.length >= 1 &&
+            suggestedFlights.map((flight) => (
+              <div key={flight._id} className="w-full max-w-[350px]">
+                <AnimatedCard
+                  title={flight.title}
+                  overview={flight.overview}
+                  image={flight.mainImage}
+                  price={flight.price}
+                  rating={flight.rating}
+                  category={flight.category}
+                  id={flight._id}
+                />
+              </div>
+            ))}
         </div>
       </div>
+
     </div>
   );
 };

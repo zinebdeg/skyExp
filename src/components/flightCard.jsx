@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
-export default function AnimatedCard({ title, image, price, rating, category, id }) {
+export default function AnimatedCard({ title, overview, image, price, rating, category, id }) {
   const [isHovered, setIsHovered] = useState(false);
 
   // Function to get category badge text
@@ -87,13 +87,14 @@ export default function AnimatedCard({ title, image, price, rating, category, id
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-yellow-400 text-lg">★</span>
                 <span className="text-sm font-bold">{rating}/5</span>
-                <motion.button
+                <motion.a
+                  href={`/flights/${id}`}
                   className="ml-auto bg-red-500 text-white px-3 py-1 rounded-full font-bold text-xs hover:bg-red-600 transition-colors"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   Check Details
-                </motion.button>
+                </motion.a>
               </div>
             </div>
           </motion.div>
@@ -119,6 +120,9 @@ export default function AnimatedCard({ title, image, price, rating, category, id
             <div>
               <div className="font-bold text-lg text-black mb-1">
                 {title}
+              </div>
+              <div className="text-lg mb-1">
+                {overview.length > 50 ? `${overview.substring(0, 50)}...` : overview}
               </div>
             </div>
             <div className="flex items-center gap-2 mt-2">

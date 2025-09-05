@@ -119,7 +119,8 @@ export default function AnimatedCard({ title, overview, image, price, rating, ca
           >
             <div>
               <div className="font-bold text-lg text-black mb-1">
-                {title}
+                {/* {title} */}
+                {title.length > 25 ? `${title.substring(0, 25)}...` : title}
               </div>
               <div className="text-lg mb-1">
                 {overview.length > 50 ? `${overview.substring(0, 50)}...` : overview}

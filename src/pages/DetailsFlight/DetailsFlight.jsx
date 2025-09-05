@@ -5,6 +5,7 @@ import AnimatedCard from "../../components/flightCard";
 import axios from "axios";
 import API_BASE_URL from "../../config/api";
 import { StarIcon } from "lucide-react";
+import FlightReservation from "../../components/FlightReservation";
 
 const DetailsFlight = () => {
   const { id } = useParams();
@@ -121,40 +122,9 @@ const DetailsFlight = () => {
           </ul>
         </div>
         
-        {/* Colonne droite : calendrier, prix, boutons */}
-        <div
-          className="w-full md:w-80 flex flex-col items-center bg-white rounded-2xl shadow-lg p-6 mt-4 md:mt-0"
-          style={{
-            minHeight: "480px",
-            justifyContent: "flex-start",
-            boxShadow: "0 2px 16px rgba(0,0,0,0.08)",
-            borderRadius: "20px"
-          }}
-        >
-          {/* Calendrier style CLASSIC */}
-          <div className="w-full mb-6">
-            <div className="flex justify-between items-center mb-2">
-              <button className="text-xl font-bold bg-transparent border-none cursor-pointer">&lt;</button>
-              <div className="text-lg font-bold">May <span className="font-normal">2025</span></div>
-              <button className="text-xl font-bold bg-transparent border-none cursor-pointer">&gt;</button>
-            </div>
-            <div className="grid grid-cols-7 text-center text-xs text-gray-500 mb-1 w-full">
-              {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d => <div key={d}>{d}</div>)}
-            </div>
-            <div className="grid grid-cols-7 text-center text-base gap-y-1 w-full">
-              {Array.from({length:31},(_,i)=>(<div key={i} className="py-1">{i+1}</div>))}
-            </div>
-          </div>
-          
-          <div className="w-full flex flex-row justify-between items-center mb-4">
-            <span className="font-bold text-lg">Price :</span>
-            <span className="text-3xl font-extrabold text-[#e74c3c]">${flight.price}</span>
-          </div>
-          
-          <button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg mb-3 transition">check availability</button>
-          <button className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 rounded-lg transition">CONTACT</button>
-        </div>
+        <FlightReservation flight={flight} />
       </div>
+
       
       {/* Bloc Reviews + Program + Overview */}
       <div className="w-full max-w-6xl mx-auto mt-12 px-4">

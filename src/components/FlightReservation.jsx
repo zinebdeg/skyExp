@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar, X, Phone, Mail, MapPin, User, Clock, DollarSign, Check } from 'lucide-react';
-// import axios from 'axios'; // Uncomment when ready to use
-// import API_BASE_URL from "../../config/api"; // Uncomment when ready to use
+import axios from 'axios';
+import API_BASE_URL from "../config/api";
 
 // Mock flight data - replace with actual props
 const mockFlight = {
@@ -17,7 +17,7 @@ const FlightReservation = ({ flight = mockFlight }) => {
   const [loading, setLoading] = useState(false);
 
   // Calendar state
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 4)); // May 2025
+  const [currentDate, setCurrentDate] = useState(new Date()); // May 2025
   const [selectedDate, setSelectedDate] = useState(null);
   const [travelers, setTravelers] = useState(1);
 
@@ -107,16 +107,16 @@ const FlightReservation = ({ flight = mockFlight }) => {
       };
 
       // REPLACE THIS SECTION WITH YOUR ACTUAL API CALL:
-      // const response = await axios.post(`${API_BASE_URL}/api/reservations`, reservationData);
-      // if (response.status === 200 || response.status === 201) {
-      //   setCurrentStep(4);
-      // } else {
-      //   throw new Error('Reservation failed');
-      // }
+      const response = await axios.post(`${API_BASE_URL}/api/reservations`, reservationData);
+      if (response.status === 200 || response.status === 201) {
+        setCurrentStep(4);
+      } else {
+        throw new Error('Reservation failed');
+      }
       
-      // For demo purposes, simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log('Reservation data:', reservationData);
+      // // For demo purposes, simulate API call
+      // await new Promise(resolve => setTimeout(resolve, 2000));
+      // console.log('Reservation data:', reservationData);
       
       setCurrentStep(4);
     } catch (error) {
@@ -187,7 +187,7 @@ const FlightReservation = ({ flight = mockFlight }) => {
             {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d => <div key={d}>{d}</div>)}
           </div>
           <div className="grid grid-cols-7 text-center text-sm gap-1 w-full">
-            {generateCalendarDays().slice(0, 21).map((date, i) => (
+            {generateCalendarDays().slice(0, 30).map((date, i) => (
               <div 
                 key={i} 
                 className={`py-1 cursor-pointer hover:bg-gray-100 rounded ${
@@ -199,21 +199,21 @@ const FlightReservation = ({ flight = mockFlight }) => {
             ))}
           </div>
         </div>
-                     
+                    
         <div className="w-full flex flex-row justify-between items-center mb-4">
           <span className="font-bold text-lg">Price :</span>
           <span className="text-3xl font-extrabold text-[#e74c3c]">${flight.price}</span>
         </div>
-                     
+                    
         <button 
           onClick={() => setShowModal(true)}
           className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg mb-3 transition"
         >
           Check Availability
         </button>
-        <button className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 rounded-lg transition">
+        <a href="tel:+212661445327" className="w-full flex items-center justify-center bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 rounded-lg transition">
           CONTACT
-        </button>
+        </a>
       </div>
 
       {/* Modal */}
@@ -222,7 +222,7 @@ const FlightReservation = ({ flight = mockFlight }) => {
           <div className="bg-orange-50 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex justify-between items-center p-6 border-b">
-              <h2 className="text-2xl font-bold">{flight.name}</h2>
+              <h2 className="text-2xl font-bold">{flight.title}</h2>
               <button 
                 onClick={resetModal}
                 className="text-gray-500 hover:text-gray-700"
@@ -233,7 +233,7 @@ const FlightReservation = ({ flight = mockFlight }) => {
 
             {/* Progress Bar */}
             <div className="px-6 py-4 border-b">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-center mb-2">
                 {[1, 2, 3, 4].map((step) => (
                   <div key={step} className="flex items-center">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
@@ -247,8 +247,8 @@ const FlightReservation = ({ flight = mockFlight }) => {
                   </div>
                 ))}
               </div>
-              <div className="text-sm text-gray-600">
-                Step {currentStep} of 4: {
+              <div className="text-sm flex justify-center mt-4 text-gray-600">
+                {
                   currentStep === 1 ? 'Select Date & Travelers' :
                   currentStep === 2 ? 'Contact Information' :
                   currentStep === 3 ? 'Review Booking' :
@@ -548,12 +548,12 @@ const FlightReservation = ({ flight = mockFlight }) => {
                   </p>
                   
                   <div className="space-y-3">
-                    <button 
+                    {/* <button 
                       onClick={navigateToBookings}
                       className="w-full py-3 bg-blue-700 text-white rounded-lg font-bold hover:bg-blue-800"
                     >
                       View My Bookings
-                    </button>
+                    </button> */}
                     <button 
                       onClick={resetModal}
                       className="w-full py-3 border border-gray-300 rounded-lg font-bold hover:bg-gray-50"

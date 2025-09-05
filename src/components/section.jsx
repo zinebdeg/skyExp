@@ -22,9 +22,24 @@ const useOnScreen = (ref, threshold = 0.3) => {
 const PanoramicSection = () => {
   const [isActive, setIsActive] = useState(false);
   const [showSmallImages, setShowSmallImages] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const sectionRef = useRef();
   
   const isOnScreen = useOnScreen(sectionRef, 0.5); 
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
 
   useEffect(() => {
     if (isOnScreen && !isActive) {
@@ -39,7 +54,7 @@ const PanoramicSection = () => {
   return (
     <section 
       ref={sectionRef}
-      className="w-full bg-white py-16"
+      className="w-full bg-white py-12 md:py-16"
     >
       <div className="max-w-6xl mx-auto px-4 w-full">
         <motion.div
@@ -52,15 +67,15 @@ const PanoramicSection = () => {
           className={`text-center ${isActive ? 'pointer-events-none' : ''}`}
           style={{ marginBottom: isActive ? '0' : '2rem' }}
         >
-          <h2 className="text-4xl md:text-5xl font-extrabold">Panoramic Views</h2>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold">Panoramic Views</h2>
         </motion.div>
 
-        <div className="relative h-[400px] md:h-[450px]">
+        <div className="relative h-[350px] sm:h-[380px] md:h-[450px]">
           <motion.div 
             className="flex h-full"
             animate={{
-              flexDirection: isActive ? 'row' : 'column',
-              gap: isActive ? '2rem' : '0rem'
+              flexDirection: isActive && !isMobile ? 'row' : 'column',
+              gap: isActive && !isMobile ? '2rem' : '0rem'
             }}
             transition={{ duration: 0.6, ease: "easeInOut" }}
           >
@@ -81,23 +96,23 @@ const PanoramicSection = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.4 }}
-                    className="pr-8 absolute top-0 left-0"
+                    className="pr-0 md:pr-8 absolute top-0 left-0 w-full md:w-auto"
                   >
-                    <h2 className="text-4xl md:text-5xl font-extrabold mb-4">Panoramic Views</h2>
-                    <h3 className="text-xl font-bold mb-4">Marrakech from Above</h3>
-                    <p className="text-lg text-black/80 mb-6 max-w-md">
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold mb-3 md:mb-4 text-center md:text-left">Panoramic Views</h2>
+                    <h3 className="text-xl font-bold mb-3 md:mb-4 text-center md:text-left">Marrakech from Above</h3>
+                    <p className="text-base md:text-lg text-black/80 mb-4 md:mb-6 max-w-md mx-auto md:mx-0 text-center md:text-left">
                       Soar over the Red City and beyond in our safe and comfortable hot-air balloons. 
                       Each flight is a new masterpiece painted by the sky.
                     </p>
                     
-                    <div className="flex gap-6">
+                    <div className="flex justify-center md:justify-start gap-4 md:gap-6">
                       <AnimatePresence>
                         {showSmallImages && (
                           <>
                             <motion.img
                               src="/images/one.jpg"
                               alt="Breakfast"
-                              className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-2xl shadow-lg"
+                              className="w-28 h-28 md:w-32 md:h-32 lg:w-40 lg:h-40 object-cover rounded-xl md:rounded-2xl shadow-lg"
                               initial={{ opacity: 0, x: 20, scale: 0.9 }}
                               animate={{ opacity: 1, x: 0, scale: 1 }}
                               exit={{ opacity: 0, x: 20, scale: 0.9 }}
@@ -109,7 +124,7 @@ const PanoramicSection = () => {
                             <motion.img
                               src="/images/too.png"
                               alt="Balloons"
-                              className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-2xl shadow-lg"
+                              className="w-28 h-28 md:w-32 md:h-32 lg:w-40 lg:h-40 object-cover rounded-xl md:rounded-2xl shadow-lg"
                               initial={{ opacity: 0, x: 20, scale: 0.9 }}
                               animate={{ opacity: 1, x: 0, scale: 1 }}
                               exit={{ opacity: 0, x: 20, scale: 0.9 }}
@@ -131,20 +146,20 @@ const PanoramicSection = () => {
             <motion.div 
               className="flex justify-center items-center h-full cursor-pointer"
               animate={{
-                width: isActive ? '50%' : '100%'
+                width: isActive && !isMobile ? '50%' : '100%'
               }}
               transition={{ duration: 0.6, ease: "easeInOut" }}
             >
               <motion.img
                 src="/images/panoramic.png"
                 alt="Panoramic Balloon"
-                className="object-cover rounded-3xl shadow-xl h-full w-full"
+                className="object-cover rounded-2xl md:rounded-3xl shadow-xl h-full w-full"
                 animate={{
                   height: isActive ? '100%' : '100%',
-                  maxWidth: isActive ? '400px' : '800px'
+                  maxWidth: isActive && !isMobile ? '400px' : '100%'
                 }}
                 transition={{ duration: 0.6, ease: "easeInOut" }}
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: isMobile ? 1 : 1.02 }}
               />
             </motion.div>
           </motion.div>

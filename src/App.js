@@ -25,8 +25,6 @@ const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
   const token = Cookies.get("jwt");
 
-  console.log(token)
-
   useEffect(() => {
     if (!token) {
       navigate("/login");

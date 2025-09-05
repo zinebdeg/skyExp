@@ -18,7 +18,10 @@ import {
   XCircle,
   Clock,
   Loader,
-  RefreshCw
+  RefreshCw,
+  Plus,
+  User,
+  Plane
 } from 'lucide-react';
 import axios from 'axios';
 import API_BASE_URL from '../../config/api';
@@ -31,8 +34,21 @@ const AdminReservations = () => {
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [flights, setFlights] = useState([]);
+  const [formData, setFormData] = useState({
+    date: '',
+    travelers: 1,
+    total: 0,
+    fullName: '',
+    email: '',
+    phoneNumber: '',
+    pickUpLocation: '',
+    flight: '',
+    status: 'pending'
+  });
 
   // Fetch reservations from API
   const fetchReservations = async () => {
@@ -52,9 +68,24 @@ const AdminReservations = () => {
     }
   };
 
+  // Fetch flights for the create form
+  const fetchFlights = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/flights`,
+        { withCredentials: true }
+      );
+      setFlights(response.data);
+    } catch (err) {
+      console.error('Error fetching flights:', err);
+      setError('Failed to load flights. Please try again.');
+    }
+  };
+
   // Initial data fetch
   useEffect(() => {
     fetchReservations();
+    fetchFlights();
   }, []);
 
   // Filter reservations based on search and filters
@@ -97,10 +128,80 @@ const AdminReservations = () => {
     setFilteredReservations(result);
   }, [reservations, searchTerm, statusFilter, dateFilter]);
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    
+    // Convert numeric fields to numbers
+    if (name === 'travelers' || name === 'total') {
+      setFormData(prev => ({
+        ...prev,
+        [name]: Number(value)
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
+  // Calculate total based on flight price and number of travelers
+  const calculateTotal = () => {
+    if (formData.flight && formData.travelers) {
+      const selectedFlight = flights.find(f => f._id === formData.flight);
+      if (selectedFlight) {
+        const totalPrice = selectedFlight.price * formData.travelers;
+        setFormData(prev => ({ ...prev, total: totalPrice }));
+      }
+    }
+  };
+
+  // Calculate total when flight or travelers changes
+  useEffect(() => {
+    calculateTotal();
+  }, [formData.flight, formData.travelers]);
+
   // View reservation details
   const viewReservationDetails = (reservation) => {
     setSelectedReservation(reservation);
     setShowDetailModal(true);
+  };
+
+  // Create new reservation
+  const createReservation = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      console.log(formData)
+      const response = await axios.post(
+        `${API_BASE_URL}/api/reservations`,
+        formData,
+        { withCredentials: true }
+      );
+      
+      if (response.data) {
+        // Add to local state
+        setReservations([response.data, ...reservations]);
+        setShowCreateModal(false);
+        // Reset form
+        setFormData({
+          date: '',
+          travelers: 1,
+          total: 0,
+          fullName: '',
+          email: '',
+          phoneNumber: '',
+          pickUpLocation: '',
+          flight: '',
+          status: 'pending'
+        });
+      }
+    } catch (error) {
+      console.error('Error creating reservation:', error);
+      setError('Failed to create reservation: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Update reservation status
@@ -272,6 +373,13 @@ const AdminReservations = () => {
 
           <div className="flex gap-2">
             <button
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-2 bg-[#b94c2a] text-white px-4 py-3 rounded-xl hover:bg-[#a03d22] transition-colors"
+            >
+              <Plus size={16} />
+              New Reservation
+            </button>
+            <button
               onClick={fetchReservations}
               className="flex items-center gap-2 bg-[#b94c2a] text-white px-4 py-3 rounded-xl hover:bg-[#a03d22] transition-colors"
               disabled={loading}
@@ -370,11 +478,11 @@ const AdminReservations = () => {
                     </div>
                   </td>
                   <td className="py-4 px-6">
-                    <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${getStatusClass(reservation.status)}`}>
-                      {getStatusIcon(reservation.status)}
-                      {reservation.status.charAt(0).toUpperCase() + reservation.status.slice(1)}
-                    </div>
-                  </td>
+                  <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${getStatusClass(reservation.status)}`}>
+                    {getStatusIcon(reservation.status)}
+                    {reservation.status ? reservation.status.charAt(0).toUpperCase() + reservation.status.slice(1) : 'Unknown'}
+                  </div>
+                </td>
                   <td className="py-4 px-6">
                     <div className="flex gap-2">
                       <button
@@ -432,6 +540,167 @@ const AdminReservations = () => {
           </div>
         )}
       </div>
+
+      {/* Create Reservation Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white border-b border-[#eec09a]/30 p-6 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-[#b94c2a]">Create New Reservation</h2>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="text-[#b94c2a]" size={24} />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <form onSubmit={createReservation} className="p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-[#b94c2a] mb-4 flex items-center gap-2">
+                    <User size={20} />
+                    Customer Information
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-[#b94c2a]/70 mb-1">Full Name *</label>
+                      <input
+                        type="text"
+                        name="fullName"
+                        value={formData.fullName}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-3 border border-[#eec09a]/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b94c2a]/30"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[#b94c2a]/70 mb-1">Email *</label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-3 border border-[#eec09a]/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b94c2a]/30"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[#b94c2a]/70 mb-1">Phone Number</label>
+                      <input
+                        type="tel"
+                        name="phoneNumber"
+                        value={formData.phoneNumber}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 border border-[#eec09a]/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b94c2a]/30"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[#b94c2a]/70 mb-1">Pick-up Location *</label>
+                      <input
+                        type="text"
+                        name="pickUpLocation"
+                        value={formData.pickUpLocation}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-3 border border-[#eec09a]/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b94c2a]/30"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-[#b94c2a] mb-4 flex items-center gap-2">
+                    <Plane size={20} />
+                    Reservation Details
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-[#b94c2a]/70 mb-1">Flight *</label>
+                      <select
+                        name="flight"
+                        value={formData.flight}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-3 border border-[#eec09a]/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b94c2a]/30"
+                      >
+                        <option value="">Select a flight</option>
+                        {flights.map(flight => (
+                          <option key={flight._id} value={flight._id}>
+                            {flight.title} - ${flight.price}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[#b94c2a]/70 mb-1">Date & Time *</label>
+                      <input
+                        type="datetime-local"
+                        name="date"
+                        value={formData.date}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-3 border border-[#eec09a]/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b94c2a]/30"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[#b94c2a]/70 mb-1">Number of Travelers *</label>
+                      <input
+                        type="number"
+                        name="travelers"
+                        min="1"
+                        max="20"
+                        value={formData.travelers}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-3 border border-[#eec09a]/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b94c2a]/30"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[#b94c2a]/70 mb-1">Status</label>
+                      <select
+                        name="status"
+                        value={formData.status}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 border border-[#eec09a]/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b94c2a]/30"
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                    </div>
+                    <div className="bg-[#eec09a]/10 p-4 rounded-xl">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[#b94c2a]/70">Total Amount:</span>
+                        <span className="text-2xl font-bold text-[#b94c2a]">${formData.total}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-6 border-t border-[#eec09a]/30">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="flex-1 bg-gray-100 text-gray-600 py-3 px-6 rounded-xl hover:bg-gray-200 transition-colors font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-[#b94c2a] text-white py-3 px-6 rounded-xl hover:bg-[#a03d22] transition-colors font-semibold"
+                  disabled={loading}
+                >
+                  {loading ? <Loader className="animate-spin mx-auto" size={20} /> : 'Create Reservation'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Reservation Detail Modal */}
       {showDetailModal && selectedReservation && (

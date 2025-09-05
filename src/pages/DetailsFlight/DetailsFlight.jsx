@@ -199,7 +199,7 @@ const DetailsFlight = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 justify-items-center">
           {suggestedFlights.length >= 1 &&
             suggestedFlights.map((flight) => (
-              <div key={flight._id} className="w-full max-w-[350px]">
+              <div key={flight._id} className="w-full max-w-[350px] flex flex-col items-center">
                 <AnimatedCard
                   title={flight.title}
                   overview={flight.overview}

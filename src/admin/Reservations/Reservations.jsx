@@ -300,7 +300,7 @@ const AdminReservations = () => {
   }
 
   return (
-    <div className="p-8 bg-gradient-to-br from-orange-50 to-amber-50 min-h-screen">
+    <div className="p-8 max-w-[100vw] bg-gradient-to-br from-orange-50 to-amber-50 min-h-screen">
       {/* Error Message */}
       {error && (
         <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">

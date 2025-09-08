@@ -23,11 +23,10 @@ const Footer = () => {
                 <div className="flex-1 min-w-[180px] flex flex-col gap-2 mt-8 md:mt-0">
                   <div className="font-bold mb-2">Useful Links</div>
                   <ul className="space-y-2 text-sm">
-                    <li><a href="#" className="hover:underline font-bold">• Home</a></li>
-                    <li><a href="#" className="hover:underline font-bold">• Program</a></li>
-                    <li><a href="#" className="hover:underline font-bold">• About us</a></li>
-                    <li><a href="#" className="hover:underline font-bold">• Flights</a></li>
-                    <li><a href="#" className="hover:underline font-bold">• Contact</a></li>
+                    <li><a href="/" className="hover:underline font-bold">• Home</a></li>
+                    <li><a href="/about" className="hover:underline font-bold">• About us</a></li>
+                    <li><a href="/booking" className="hover:underline font-bold">• Flights</a></li>
+                    <li><a href="/contact" className="hover:underline font-bold">• Contact</a></li>
                   </ul>
                 </div>
                 {/* Bloc droite : réseaux sociaux */}

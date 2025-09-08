@@ -8,20 +8,16 @@ import {
   TrendingUp, 
   Star,
   MapPin,
-  Phone,
   Mail,
   Clock,
   Heart,
   Award,
   ChevronRight,
-  Activity,
-  Plus,
   BarChart3,
-  Settings,
-  UserCheck,
   CheckCircle,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  Loader
 } from 'lucide-react';
 import API_BASE_URL from '../../config/api';
 
@@ -226,10 +222,10 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 flex items-center justify-center">
+      <div className="p-8 bg-gradient-to-br from-orange-50 to-amber-50 min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#b94c2a] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-[#b94c2a] font-semibold">Loading Dashboard...</p>
+          <Loader className="animate-spin mx-auto text-[#b94c2a]" size={48} />
+          <p className="mt-4 text-[#b94c2a]">Loading Dashboard...</p>
         </div>
       </div>
     );

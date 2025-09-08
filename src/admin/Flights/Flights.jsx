@@ -79,7 +79,7 @@ const AdminFlights = () => {
   // Filter flights based on search and category
   const filteredFlights = flights.filter(flight => {
     const matchesSearch = flight.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         flight.overview.toLowerCase().includes(searchTerm.toLowerCase());
+                          flight.overview.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || flight.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
@@ -377,7 +377,7 @@ const AdminFlights = () => {
   }
 
   return (
-    <div className="p-8 bg-gradient-to-br from-orange-50 to-amber-50 min-h-screen">
+    <div className="p-8 bg-gradient-to-br max-w-[100vw] from-orange-50 to-amber-50 min-h-screen">
       {/* Error message */}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
@@ -404,8 +404,8 @@ const AdminFlights = () => {
         </div>
 
         {/* Controls */}
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="flex gap-4 items-center">
+        <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+          <div className="flex max-md:flex-col gap-4 items-center">
             <div className="relative">
               <Search className="absolute left-3 top-3 text-[#b94c2a]/50" size={20} />
               <input
@@ -457,7 +457,7 @@ const AdminFlights = () => {
               </div>
             </div>
             
-            <div className="p-6">
+            <div className="p-3">
               <h3 className="text-xl font-bold text-[#b94c2a] mb-2 line-clamp-2">{flight.title}</h3>
               <p className="text-[#b94c2a]/70 mb-4 line-clamp-3">{flight.overview}</p>
               

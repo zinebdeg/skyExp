@@ -110,8 +110,8 @@ export default function HomePage() {
                 <p className="text-lg text-center mb-8 font-serif">With award winning services we are trusted many companies</p>
                 <div className="flex flex-wrap justify-center items-center gap-10 md:gap-16">
                   <img src="/images/airbnb.png" alt="airbnb" className="h-12 object-contain" style={{minWidth:'80px'}} />
-                  <img src="/images/booking.png" alt="Booking.com" className="h-10 object-contain" style={{minWidth:'120px'}} />
-                  <img src="/images/tripadvisor.png" alt="Tripadvisor" className="h-10 object-contain" style={{minWidth:'120px'}} />
+                  <img src="/images/Booking.png" alt="Booking.com" className="h-10 object-contain" style={{minWidth:'120px'}} />
+                  <img src="/images/Tripadvisor.png" alt="Tripadvisor" className="h-10 object-contain" style={{minWidth:'120px'}} />
                   <img src="/images/getyourguide.png" alt="GetYourGuide" className="h-10 object-contain" style={{minWidth:'120px'}} />
                 </div>
               </div>
